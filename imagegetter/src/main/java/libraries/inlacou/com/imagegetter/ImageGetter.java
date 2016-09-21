@@ -22,10 +22,9 @@ import java.io.IOException;
  */
 public class ImageGetter {
 	private static final String DEBUG_TAG = ImageGetter.class.getName();
-	private static final int REQUEST_CODE_SELECT_PICTURE = 0;
-	private static final int REQUEST_CODE_CROP = 1;
 	private final Callbacks callbacks;
 	private final boolean crop, circular, fixed;
+	private int request_code_select_picture,request_code_crop;
 	private final int width, height;
 	private Context context;
 
@@ -33,7 +32,8 @@ public class ImageGetter {
 	private Uri uri;
 	private String tag;
 
-	public ImageGetter(Context context, boolean crop, boolean circular, boolean fixed, int width, int height, Callbacks callbacks) {
+	public ImageGetter(Context context, boolean crop, boolean circular, boolean fixed, int width, int height,
+	                   int request_code_select_picture, int request_code_crop, Callbacks callbacks) {
 		this.callbacks = callbacks;
 		this.crop = crop;
 		this.circular = circular;
@@ -41,16 +41,21 @@ public class ImageGetter {
 		this.height = height;
 		this.fixed = fixed;
 		this.context = context;
+		this.request_code_select_picture = request_code_select_picture;
+		this.request_code_crop = request_code_crop;
 		activity = callbacks.getActivity();
 	}
 
-	private ImageGetter(boolean crop, boolean circular, boolean fixed, int width, int height, Callbacks callbacks) {
+	private ImageGetter(boolean crop, boolean circular, boolean fixed, int width, int height,
+	                    int request_code_select_picture, int request_code_crop, Callbacks callbacks) {
 		this.callbacks = callbacks;
 		this.crop = crop;
 		this.circular = circular;
 		this.width = width;
 		this.height = height;
 		this.fixed = fixed;
+		this.request_code_select_picture = request_code_select_picture;
+		this.request_code_crop = request_code_crop;
 		activity = callbacks.getActivity();
 	}
 
@@ -69,7 +74,7 @@ public class ImageGetter {
 				checkCameraPermission(uri);
 			}else if(permissions[i].equalsIgnoreCase(PermissionUtils.Permission.camera.permission)){
 				cameraPermission = true;
-				ImageUtils.openImageIntent(activity, REQUEST_CODE_SELECT_PICTURE, uri);
+				ImageUtils.openImageIntent(activity, request_code_select_picture, uri);
 			}
 		}
 	}
@@ -94,7 +99,7 @@ public class ImageGetter {
 		PermissionUtils.checkGetIfNotPermission(context, new PermissionUtils.Callbacks() {
 			@Override
 			public void onPermissionGranted() {
-				ImageUtils.openImageIntent(activity, REQUEST_CODE_SELECT_PICTURE, aux);
+				ImageUtils.openImageIntent(activity, request_code_select_picture, aux);
 			}
 
 			@Override
@@ -106,7 +111,7 @@ public class ImageGetter {
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == Activity.RESULT_OK) {
-			if (requestCode == REQUEST_CODE_SELECT_PICTURE) {
+			if (requestCode == request_code_select_picture) {
 				final boolean isCamera;
 				if (data == null) {
 					isCamera = true;
@@ -142,7 +147,7 @@ public class ImageGetter {
 					Log.d(DEBUG_TAG+".onActivityResult", "launching CircularCropActivity intent");
 					launchCropActivity(selectedImageUri);
 				}
-			}else if (requestCode == REQUEST_CODE_CROP) {
+			}else if (requestCode == request_code_crop) {
 				String filename = data.getStringExtra(CropActivity.RESPONSE_EXTRA_BITMAP);
 				Log.d(DEBUG_TAG+".onActivityResult", "3 - filename: " + filename);
 				callbacks.setImage(filename, tag);
@@ -175,7 +180,7 @@ public class ImageGetter {
 		intent.putExtra(CropActivity.INTENT_EXTRA_WIDTH, width);
 		intent.putExtra(CropActivity.INTENT_EXTRA_HEIGHT, height);
 		intent.putExtra(CropActivity.INTENT_EXTRA_FIXED, fixed);
-		activity.startActivityForResult(intent, REQUEST_CODE_CROP);
+		activity.startActivityForResult(intent, request_code_crop);
 	}
 
 	public void onSaveInstanceState(Bundle outState) {
@@ -185,6 +190,8 @@ public class ImageGetter {
 		outState.putBoolean("fixed", fixed);
 		outState.putInt("width", width);
 		outState.putInt("height", height);
+		outState.putInt("request_code_select_picture", request_code_select_picture);
+		outState.putInt("request_code_crop", request_code_crop);
 	}
 
 	public static ImageGetter onRestoreInstanceState(Bundle savedInstanceState, Callbacks callbacks) {
@@ -194,6 +201,8 @@ public class ImageGetter {
 					savedInstanceState.getBoolean("fixed"),
 					savedInstanceState.getInt("width"),
 					savedInstanceState.getInt("height"),
+					savedInstanceState.getInt("request_code_select_picture"),
+					savedInstanceState.getInt("request_code_crop"),
 					callbacks);
 			imageGetter.setUri(Uri.parse(savedInstanceState.getString("uri")));
 			return imageGetter;

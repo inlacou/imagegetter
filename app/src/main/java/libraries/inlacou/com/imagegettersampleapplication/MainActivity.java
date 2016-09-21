@@ -23,6 +23,9 @@ import libraries.inlacou.com.imagegetter.ImageUtils;
 public class MainActivity extends AppCompatActivity
 		implements NavigationView.OnNavigationItemSelectedListener {
 
+	private static final int REQUEST_CODE_SELECT_PICTURE = 0;
+	private static final int REQUEST_CODE_CROP = 1;
+
 	private ImageView imageView;
 	private ImageGetter imageGetter;
 
@@ -55,7 +58,8 @@ public class MainActivity extends AppCompatActivity
 		imageView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if(imageGetter==null) imageGetter = new ImageGetter(MainActivity.this, true, false, false, -1, -1, getImageGetterCallbacks());
+				if(imageGetter==null) imageGetter = new ImageGetter(MainActivity.this, true, false, false, -1, -1,
+						REQUEST_CODE_SELECT_PICTURE, REQUEST_CODE_CROP, getImageGetterCallbacks());
 				imageGetter.start("");
 			}
 		});

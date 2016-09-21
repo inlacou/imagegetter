@@ -67,6 +67,11 @@ public class ImageUtils {
 		return s;
 	}
 
+	public static Drawable getDawableResource(Context c, String ImageName) {
+		return c.getResources().getDrawable(c.getResources().getIdentifier(ImageName, "drawable", c.getPackageName()));
+	}
+
+
 	public static byte[] bitmapToByteArray(Bitmap bitmap){
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
