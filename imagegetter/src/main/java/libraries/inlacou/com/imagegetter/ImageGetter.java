@@ -161,6 +161,13 @@ public class ImageGetter {
 		return bitmap;
 	}
 
+	public static Bitmap getBitmapFromPath(String filename) throws IOException {
+		FileInputStream is = new FileInputStream(filename);
+		Bitmap bitmap = BitmapFactory.decodeStream(is);
+		is.close();
+		return bitmap;
+	}
+
 	private void launchCropActivity(Uri selectedImageUri) {
 		Intent intent = new Intent(activity, CropActivity.class);
 		intent.putExtra(CropActivity.INTENT_EXTRA_URI, selectedImageUri);
