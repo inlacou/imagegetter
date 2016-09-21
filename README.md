@@ -2,7 +2,7 @@
 [![](https://jitpack.io/v/inlacou/imagegetter.svg)](https://jitpack.io/#inlacou/imagegetter)
 
 In your module:app build.gradle:
-```
+```groovy
 dependencies {
     ...
     compile 'com.github.inlacou:imagegetter:RC3'
@@ -10,7 +10,7 @@ dependencies {
 ```
 
 In your project build.gradle:
-```
+```groovy
 allprojects {
     repositories {
         ...
@@ -20,7 +20,7 @@ allprojects {
 ```
 
 In your activity:
-```
+```java
   protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		//Optional, here:
