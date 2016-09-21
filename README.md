@@ -27,7 +27,7 @@ In your activity:
 		imageGetter = new ImageGetter(YourActivity.this, true, false, false, 1, 1,
 				RequestCodes.REQUEST_CODE_SELECT_PICTURE.value, RequestCodes.REQUEST_CODE_CROP.value, getImageGetterCallback());
     
-    yourView.setOnClickListener(new View.OnClickListener() {
+    		yourView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				//Optional, or here
