@@ -115,6 +115,7 @@ public class MainActivity extends AppCompatActivity
 		imageGetter.onActivityResult(requestCode, resultCode, data);
 	}
 
+	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		imageGetter.onRequestPermissionsResult(requestCode, permissions, grantResults);
 	}

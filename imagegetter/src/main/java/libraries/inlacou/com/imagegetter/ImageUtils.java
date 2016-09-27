@@ -383,7 +383,7 @@ public class ImageUtils {
 		return byteArrayOutputStream.toByteArray();
 	}
 
-	public static void setImageFromMemory(Activity activity, String filename, ImageView imageView) {
+	public static void setImageFromMemory(Activity activity, String filename, ImageView imageView, boolean adjustViewBounds, boolean setScaleType) {
 		Log.d(DEBUG_TAG, ".setImage filename: " + filename);
 		Bitmap selectedImage = null;
 		try {
@@ -394,8 +394,8 @@ public class ImageUtils {
 		if(selectedImage==null) {
 			return;
 		}
-		imageView.setAdjustViewBounds(true);
-		imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+		if(adjustViewBounds) imageView.setAdjustViewBounds(true);
+		if(setScaleType) imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 		Drawable drawable = new BitmapDrawable(activity.getResources(), selectedImage);
 		imageView.setImageDrawable(drawable);
 	}
