@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity
 
 			@Override
 			public void setImage(String path, String tag) {
-				ImageUtils.setImageFromMemory(MainActivity.this, path, imageView);
+				ImageUtils.setImageFromMemory(MainActivity.this, path, imageView, true, true);
 			}
 		};
 	}

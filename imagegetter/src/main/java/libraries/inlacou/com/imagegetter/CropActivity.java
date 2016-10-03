@@ -133,7 +133,7 @@ public class CropActivity extends AppCompatActivity {
 							filename = uri.toString().replace("file:", "");
 							stream = new FileOutputStream(filename);
 						} catch (FileNotFoundException fnfe) {
-							filename = "///storage/emulated/0/imagegetter/croppedbitmap" + System.currentTimeMillis() + "." + "jpg";
+							filename = "///storage/emulated/0/"+getString(R.string.app_name)+"/croppedbitmap" + System.currentTimeMillis() + "." + "jpg";
 							stream = new FileOutputStream(filename);
 							//stream = CropActivity.this.openFileOutput(filename, Context.MODE_PRIVATE);
 						}

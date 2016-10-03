@@ -78,9 +78,9 @@ public class ImageUtils {
 		return stream.toByteArray();
 	}
 
-	public static Uri generateURI(){
-		final File root = new File(Environment.getExternalStorageDirectory() + File.separator + "LEDT" + File.separator);
-		Log.d(DEBUG_TAG+".openImageIntent", "root: " + Environment.getExternalStorageDirectory() + File.separator + "LEDT" + File.separator);
+	public static Uri generateURI(Context context){
+		final File root = new File(Environment.getExternalStorageDirectory() + File.separator + context.getString(R.string.app_name) + File.separator);
+		Log.d(DEBUG_TAG+".openImageIntent", "root: " + Environment.getExternalStorageDirectory() + File.separator + context.getString(R.string.app_name) + File.separator);
 		root.mkdirs();
 		final String fname = ImageUtils.getUniqueImageFilename();
 		Log.d(DEBUG_TAG+".openImageIntent", "fname: " + fname);

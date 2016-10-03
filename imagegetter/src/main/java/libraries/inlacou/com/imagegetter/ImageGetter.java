@@ -60,7 +60,7 @@ public class ImageGetter {
 	}
 
 	public void start(String tag){
-		this.uri = ImageUtils.generateURI();
+		this.uri = ImageUtils.generateURI(context);
 		this.tag = tag;
 		checkExternalStoragePermission();
 	}
