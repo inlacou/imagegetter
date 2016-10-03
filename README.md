@@ -1,4 +1,4 @@
-# imagegetter
+	imagegetter
 [![](https://jitpack.io/v/inlacou/imagegetter.svg)](https://jitpack.io/#inlacou/imagegetter)
 
 In your module:app build.gradle:
@@ -58,6 +58,7 @@ In your activity:
 	public void onBackPressed() {
 		//If you want ImageGetter to delete the image from external memory (recommended)
 		if(imageGetter!=null) imageGetter.destroy();
+		super.onBackPressed();
 	}
   
   @Override
