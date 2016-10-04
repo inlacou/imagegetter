@@ -1,4 +1,5 @@
-	imagegetter
+# imagegetter
+
 [![](https://jitpack.io/v/inlacou/imagegetter.svg)](https://jitpack.io/#inlacou/imagegetter)
 
 In your module:app build.gradle:
