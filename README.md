@@ -34,7 +34,7 @@ In your activity:
 			public void setImage(final String filename, String tag) {
 				//Get image from path and do whatever you want with it.
 				//For example, load it into an imageView
-				ImageUtils.setImageFromMemory(YourActivity.this, filename, imageView);
+				ImageUtils.setImageFromMemory(YourActivity.this, filename, imageView, bAdjustViewBounds, bSetScaleTypeCenterCrop);
 			}
 		};
 	}
