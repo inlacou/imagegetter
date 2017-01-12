@@ -2,23 +2,7 @@
 
 [![](https://jitpack.io/v/inlacou/imagegetter.svg)](https://jitpack.io/#inlacou/imagegetter)
 
-In your module:app build.gradle:
-```groovy
-dependencies {
-    ...
-    compile 'com.github.inlacou:imagegetter:RC3'
-}
-```
-
-In your project build.gradle:
-```groovy
-allprojects {
-    repositories {
-        ...
-        maven { url "https://jitpack.io" }
-    }
-}
-```
+Click on jitpack plugin above here to see how to import last library version.
 
 In your activity:
 ```java
@@ -50,7 +34,7 @@ In your activity:
 			public void setImage(final String filename, String tag) {
 				//Get image from path and do whatever you want with it.
 				//For example, load it into an imageView
-				ImageUtils.setImageFromMemory(YourActivity.this, filename, imageView);
+				ImageUtils.setImageFromMemory(YourActivity.this, filename, imageView, bAdjustViewBounds, bSetScaleTypeCenterCrop);
 			}
 		};
 	}
