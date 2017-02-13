@@ -83,9 +83,10 @@ public class ImageUtils {
 		Log.d(DEBUG_TAG+".openImageIntent", "root: " + Environment.getExternalStorageDirectory() + File.separator + context.getString(R.string.app_name) + File.separator);
 		root.mkdirs();
 		final String fname = ImageUtils.getUniqueImageFilename();
-		Log.d(DEBUG_TAG+".openImageIntent", "fname: " + fname);
+		Log.d(DEBUG_TAG+".openImageIntent", "filename: " + fname);
 		final File sdImageMainDirectory = new File(root, fname);
 		Uri outputImageUri = Uri.fromFile(sdImageMainDirectory);
+		Log.d(DEBUG_TAG+".openImageIntent", "outputImageUri: " + outputImageUri);
 		return outputImageUri;
 	}
 
@@ -383,11 +384,11 @@ public class ImageUtils {
 		return byteArrayOutputStream.toByteArray();
 	}
 
-	public static void setImageFromMemory(Activity activity, String filename, ImageView imageView, boolean adjustViewBounds, boolean setScaleType) {
+	public static void setImageFromMemory(Activity activity, String filename, int maxSize, ImageView imageView, boolean adjustViewBounds, boolean setScaleType) {
 		Log.d(DEBUG_TAG, ".setImage filename: " + filename);
 		Bitmap selectedImage = null;
 		try {
-			selectedImage = ImageGetter.getBitmapFromPath(filename, 1000);
+			selectedImage = ImageGetter.getBitmapFromPath(activity, filename, maxSize);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

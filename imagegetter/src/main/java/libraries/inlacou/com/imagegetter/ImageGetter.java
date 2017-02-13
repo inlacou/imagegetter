@@ -13,6 +13,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 //TODO clean old images, here or don't know where. Maybe after sending them to server, don't know.
@@ -60,6 +61,7 @@ public class ImageGetter {
 	}
 
 	public void start(String tag){
+		destroy();
 		this.uri = ImageUtils.generateURI(context);
 		this.tag = tag;
 		checkExternalStoragePermission();
@@ -150,6 +152,8 @@ public class ImageGetter {
 			}else if (requestCode == request_code_crop) {
 				String filename = data.getStringExtra(CropActivity.RESPONSE_EXTRA_BITMAP);
 				Log.d(DEBUG_TAG+".onActivityResult", "3 - filename: " + filename);
+				destroy();
+				uri = Uri.parse(filename);
 				callbacks.setImage(filename, tag);
 			}
 		}else if(resultCode==Activity.RESULT_CANCELED){
@@ -158,12 +162,20 @@ public class ImageGetter {
 		}
 	}
 
-	public static Bitmap getBitmapFromPath(String filename, int size) throws IOException {
-		FileInputStream is = new FileInputStream(filename);
-		Bitmap bitmap = BitmapFactory.decodeStream(is);
-		bitmap = ImageUtils.scaleBitmapKeepAspectRatio(bitmap, size);
-		is.close();
-		return bitmap;
+	public static Bitmap getBitmapFromPath(Context context, String filename, int size) throws IOException {
+		Log.d(DEBUG_TAG+".getBitmapFromPath", "filename: " + filename);
+		Log.d(DEBUG_TAG+".getBitmapFromPath", "size: " + size);
+		try {
+			FileInputStream is = new FileInputStream(filename);
+			Bitmap bitmap = BitmapFactory.decodeStream(is);
+			bitmap = ImageUtils.scaleBitmapKeepAspectRatio(bitmap, size);
+			is.close();
+			return bitmap;
+		}catch (FileNotFoundException fnfe){
+			Log.d(DEBUG_TAG+".getBitmapFromPath", "FileNotFoundException! Trying other approach...");
+			return ImageUtils.scaleBitmapKeepAspectRatio(MediaStore.Images.Media.getBitmap(
+					context.getContentResolver(), Uri.parse(filename)), size);
+		}
 	}
 
 	public static Bitmap getBitmapFromPath(String filename) throws IOException {
@@ -219,9 +231,13 @@ public class ImageGetter {
 	}
 
 	public void destroy(){
+		Log.d(DEBUG_TAG+".destroy"
+				, "deleteing... ");
 		try {
+			Log.d(DEBUG_TAG+".destroy", "deleteing... " + uri.getPath());
 			new File(uri.getPath()).delete();
 		}catch (NullPointerException npe){
+			Log.d(DEBUG_TAG+".destroy", "nothing!");
 		}
 	}
 

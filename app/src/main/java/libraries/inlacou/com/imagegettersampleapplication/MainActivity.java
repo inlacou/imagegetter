@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity
 
 			@Override
 			public void setImage(String path, String tag) {
-				ImageUtils.setImageFromMemory(MainActivity.this, path, imageView, true, true);
+				ImageUtils.setImageFromMemory(MainActivity.this, path, 1024, imageView, true, true);
 			}
 		};
 	}
@@ -87,6 +87,12 @@ public class MainActivity extends AppCompatActivity
 		} else {
 			super.onBackPressed();
 		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		if(imageGetter!=null) imageGetter.destroy();
+		super.onDestroy();
 	}
 
 	@Override
