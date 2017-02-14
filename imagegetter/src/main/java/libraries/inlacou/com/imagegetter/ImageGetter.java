@@ -152,9 +152,9 @@ public class ImageGetter {
 			}else if (requestCode == request_code_crop) {
 				String filename = data.getStringExtra(CropActivity.RESPONSE_EXTRA_BITMAP);
 				Log.d(DEBUG_TAG+".onActivityResult", "3 - filename: " + filename);
+				callbacks.setImage(filename, tag);
 				destroy();
 				uri = Uri.parse(filename);
-				callbacks.setImage(filename, tag);
 			}
 		}else if(resultCode==Activity.RESULT_CANCELED){
 			uri = null;
