@@ -76,6 +76,11 @@ public class MainActivity extends AppCompatActivity
 			public void setImage(String path, String tag) {
 				ImageUtils.setImageFromMemory(MainActivity.this, path, 1024, imageView, true, true);
 			}
+
+			@Override
+			public boolean shouldDestroyFile(ImageGetter.Source source) {
+				return true;
+			}
 		};
 	}
 

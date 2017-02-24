@@ -32,6 +32,7 @@ public class ImageGetter {
 	private Activity activity;
 	private Uri uri;
 	private String tag;
+	private Source source;
 
 	public ImageGetter(Context context, boolean crop, boolean circular, boolean fixed, int width, int height,
 	                   int request_code_select_picture, int request_code_crop, Callbacks callbacks) {
@@ -120,6 +121,11 @@ public class ImageGetter {
 				} else {
 					isCamera = MediaStore.ACTION_IMAGE_CAPTURE.equals(data.getAction());
 				}
+				if(isCamera){
+					source = Source.CAMERA;
+				}else{
+					source = Source.GALLERY;
+				}
 				Log.d(DEBUG_TAG+".onActivityResult", "isCamera: " + isCamera);
 
 				Uri selectedImageUri;
@@ -153,7 +159,9 @@ public class ImageGetter {
 				String filename = data.getStringExtra(CropActivity.RESPONSE_EXTRA_BITMAP);
 				Log.d(DEBUG_TAG+".onActivityResult", "3 - filename: " + filename);
 				callbacks.setImage(filename, tag);
-				destroy();
+				if(callbacks.shouldDestroyFile(source)){
+					destroy();
+				}
 				uri = Uri.parse(filename);
 			}
 		}else if(resultCode==Activity.RESULT_CANCELED){
@@ -231,10 +239,19 @@ public class ImageGetter {
 	}
 
 	public void destroy(){
-		Log.d(DEBUG_TAG+".destroy"
-				, "deleteing... ");
+		Log.d(DEBUG_TAG+".destroy", "deleteing... ");
 		try {
 			Log.d(DEBUG_TAG+".destroy", "deleteing... " + uri.getPath());
+			destroy(uri.getPath());
+		}catch (NullPointerException npe){
+			Log.d(DEBUG_TAG+".destroy", "nothing!");
+		}
+	}
+
+	public void destroy(String path){
+		Log.d(DEBUG_TAG+".destroy", "deleteing... ");
+		try {
+			Log.d(DEBUG_TAG+".destroy", "deleteing... " + path);
 			new File(uri.getPath()).delete();
 		}catch (NullPointerException npe){
 			Log.d(DEBUG_TAG+".destroy", "nothing!");
@@ -244,6 +261,11 @@ public class ImageGetter {
 	public interface Callbacks {
 		Activity getActivity();
 		void setImage(String path, String tag);
+		boolean shouldDestroyFile(Source source);
+	}
+
+	public enum Source {
+		CAMERA, GALLERY
 	}
 
 }
