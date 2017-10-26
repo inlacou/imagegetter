@@ -58,9 +58,17 @@ public class MainActivity extends AppCompatActivity
 		imageView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if(imageGetter==null) imageGetter = new ImageGetter(MainActivity.this, true, false, false, -1, -1,
-						REQUEST_CODE_SELECT_PICTURE, REQUEST_CODE_CROP,
+				if(imageGetter==null) imageGetter = new ImageGetter(
+						MainActivity.this,
+						true,
 						false,
+						true,
+						true,
+						false,
+						-1,
+						-1,
+						REQUEST_CODE_SELECT_PICTURE,
+						REQUEST_CODE_CROP,
 						getImageGetterCallbacks());
 				imageGetter.start("");
 			}
@@ -129,7 +137,7 @@ public class MainActivity extends AppCompatActivity
 	}
 
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
-		imageGetter = ImageGetter.onRestoreInstanceState(savedInstanceState, this, getImageGetterCallbacks());
+		imageGetter = ImageGetter.Companion.onRestoreInstanceState(savedInstanceState, this, getImageGetterCallbacks());
 	}
 
 	@SuppressWarnings("StatementWithEmptyBody")

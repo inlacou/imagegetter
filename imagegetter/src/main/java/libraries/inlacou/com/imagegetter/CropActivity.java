@@ -91,10 +91,10 @@ public class CropActivity extends AppCompatActivity {
 			cropImageView.setCropShape(CropImageView.CropShape.OVAL);
 		}
 		if(fixed){
-			if(width==-1){
+			if(width<=0){
 				width = 1;
 			}
-			if(height==-1){
+			if(height<=0){
 				height = 1;
 			}
 			cropImageView.setAspectRatio(width, height);

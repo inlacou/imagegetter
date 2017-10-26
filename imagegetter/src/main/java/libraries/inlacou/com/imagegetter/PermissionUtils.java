@@ -21,18 +21,18 @@ public class PermissionUtils {
 		return ContextCompat.checkSelfPermission(c, permission.permission) == PackageManager.PERMISSION_GRANTED;
 	}
 
-	public static void checkGetIfNotPermission(Context c, Callbacks callbacks, Permission permission) {
-		if(ContextCompat.checkSelfPermission(c, permission.permission) == PackageManager.PERMISSION_GRANTED){
+	public static void checkGetIfNotPermission(Activity activity, Permission permission, Callbacks callbacks) {
+		if(ContextCompat.checkSelfPermission(activity, permission.permission) == PackageManager.PERMISSION_GRANTED){
 			callbacks.onPermissionGranted();
 		}else{
-			ActivityCompat.requestPermissions(callbacks.getActivity(),
+			ActivityCompat.requestPermissions(activity,
 					new String[]{permission.permission},
 					permission.requestCode);
 		}
 	}
 
 	public enum Permission{
-		location(Manifest.permission.ACCESS_COARSE_LOCATION, 255), externalStorage(Manifest.permission.WRITE_EXTERNAL_STORAGE, 254),
+		externalStorage(Manifest.permission.WRITE_EXTERNAL_STORAGE, 254),
 		camera(Manifest.permission.CAMERA, 253);
 
 		public final int requestCode;
@@ -54,6 +54,5 @@ public class PermissionUtils {
 
 	public interface Callbacks{
 		void onPermissionGranted();
-		Activity getActivity();
 	}
 }

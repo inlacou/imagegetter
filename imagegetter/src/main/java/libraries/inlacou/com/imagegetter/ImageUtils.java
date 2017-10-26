@@ -103,7 +103,7 @@ public class ImageUtils {
 		return deleteFile(Uri.parse(s));
 	}
 
-	public static void openImageIntent(Activity activity, boolean useCamera, int YOUR_SELECT_PICTURE_REQUEST_CODE, Uri outputImageUri) {
+	public static void openImageIntent(Activity activity, boolean useCamera, boolean useGallery, int YOUR_SELECT_PICTURE_REQUEST_CODE, Uri outputImageUri) {
 		final PackageManager packageManager = activity.getPackageManager();
 		Intent chooserIntent = null;
 
@@ -128,7 +128,7 @@ public class ImageUtils {
 		}
 
 		// Filesystem.
-		if(PermissionUtils.checkPermission(activity, PermissionUtils.Permission.externalStorage)) {
+		if(useGallery && PermissionUtils.checkPermission(activity, PermissionUtils.Permission.externalStorage)) {
 			galleryIntent = new Intent();
 			galleryIntent.setType("image/*");
 			galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
@@ -388,7 +388,7 @@ public class ImageUtils {
 		Log.d(DEBUG_TAG, ".setImage filename: " + filename);
 		Bitmap selectedImage = null;
 		try {
-			selectedImage = ImageGetter.getBitmapFromPath(activity, filename, maxSize);
+			selectedImage = ImageGetter.Companion.getBitmapFromPath(activity, filename, maxSize);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
