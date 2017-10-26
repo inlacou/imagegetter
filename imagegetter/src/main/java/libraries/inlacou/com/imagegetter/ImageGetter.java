@@ -16,8 +16,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-//TODO clean old images, here or don't know where. Maybe after sending them to server, don't know.
-
 /**
  * Created by inlacou on 26/04/16.
  */
@@ -25,32 +23,17 @@ public class ImageGetter {
 	private static final String DEBUG_TAG = ImageGetter.class.getName();
 	private final Callbacks callbacks;
 	private final boolean crop, circular, fixed;
-	private int request_code_select_picture,request_code_crop;
+	private int request_code_select_picture, request_code_crop;
 	private final int width, height;
-	private Context context;
 
 	private Activity activity;
 	private Uri uri;
 	private String tag;
-	private Source source;
+	private boolean useCamera;
 
-	public ImageGetter(Context context, boolean crop, boolean circular, boolean fixed, int width, int height,
-	                   int request_code_select_picture, int request_code_crop, Callbacks callbacks) {
-		this.callbacks = callbacks;
-		this.crop = crop;
-		this.circular = circular;
-		this.width = width;
-		this.height = height;
-		this.fixed = fixed;
-		this.context = context;
-		this.request_code_select_picture = request_code_select_picture;
-		this.request_code_crop = request_code_crop;
-		activity = callbacks.getActivity();
-	}
-
-	private ImageGetter(boolean crop, boolean circular, boolean fixed, int width, int height,
-	                    int request_code_select_picture, int request_code_crop, Callbacks callbacks) {
-		this.callbacks = callbacks;
+	public ImageGetter(Activity activity, boolean crop, boolean circular, boolean fixed, int width, int height,
+	                   int request_code_select_picture, int request_code_crop, boolean useCamera, Callbacks callbacks) {
+		this.activity = activity;
 		this.crop = crop;
 		this.circular = circular;
 		this.width = width;
@@ -58,37 +41,38 @@ public class ImageGetter {
 		this.fixed = fixed;
 		this.request_code_select_picture = request_code_select_picture;
 		this.request_code_crop = request_code_crop;
-		activity = callbacks.getActivity();
+		this.useCamera = useCamera;
+		this.callbacks = callbacks;
 	}
 
 	public void start(String tag){
 		destroy();
-		this.uri = ImageUtils.generateURI(context);
+		this.uri = ImageUtils.generateURI(activity);
 		this.tag = tag;
 		checkExternalStoragePermission();
 	}
 
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-		boolean cameraPermission, externalStoragePermission;
 		for (int i=0; i<permissions.length; i++){
 			Log.d(DEBUG_TAG, i + " onActivityResult(" + requestCode + ", " + permissions[i] + ", " + grantResults[i] + ")");
 			if(permissions[i].equalsIgnoreCase(PermissionUtils.Permission.externalStorage.permission)){
-				externalStoragePermission = true;
 				checkCameraPermission(uri);
 			}else if(permissions[i].equalsIgnoreCase(PermissionUtils.Permission.camera.permission)){
-				cameraPermission = true;
-				ImageUtils.openImageIntent(activity, request_code_select_picture, uri);
+				ImageUtils.openImageIntent(activity, useCamera, request_code_select_picture, uri);
 			}
 		}
 	}
 
 	private void checkExternalStoragePermission() {
 		final Uri aux = this.uri;
-		PermissionUtils.checkGetIfNotPermission(context, new PermissionUtils.Callbacks() {
+		PermissionUtils.checkGetIfNotPermission(activity, new PermissionUtils.Callbacks() {
 			@Override
 			public void onPermissionGranted() {
-				///ImageUtils.openImageIntent(activity, REQUEST_CODE_SELECT_PICTURE, aux);
-				checkCameraPermission(aux);
+				if(useCamera) {
+					checkCameraPermission(aux);
+				}else{
+					ImageUtils.openImageIntent(activity, false, request_code_select_picture, aux);
+				}
 			}
 
 			@Override
@@ -99,10 +83,10 @@ public class ImageGetter {
 	}
 
 	private void checkCameraPermission(final Uri aux){
-		PermissionUtils.checkGetIfNotPermission(context, new PermissionUtils.Callbacks() {
+		PermissionUtils.checkGetIfNotPermission(activity, new PermissionUtils.Callbacks() {
 			@Override
 			public void onPermissionGranted() {
-				ImageUtils.openImageIntent(activity, request_code_select_picture, aux);
+				ImageUtils.openImageIntent(activity, useCamera, request_code_select_picture, aux);
 			}
 
 			@Override
@@ -120,11 +104,6 @@ public class ImageGetter {
 					isCamera = true;
 				} else {
 					isCamera = MediaStore.ACTION_IMAGE_CAPTURE.equals(data.getAction());
-				}
-				if(isCamera){
-					source = Source.CAMERA;
-				}else{
-					source = Source.GALLERY;
 				}
 				Log.d(DEBUG_TAG+".onActivityResult", "isCamera: " + isCamera);
 
@@ -159,9 +138,6 @@ public class ImageGetter {
 				String filename = data.getStringExtra(CropActivity.RESPONSE_EXTRA_BITMAP);
 				Log.d(DEBUG_TAG+".onActivityResult", "3 - filename: " + filename);
 				callbacks.setImage(filename, tag);
-				if(callbacks.shouldDestroyFile(source)){
-					destroy();
-				}
 				uri = Uri.parse(filename);
 			}
 		}else if(resultCode==Activity.RESULT_CANCELED){
@@ -212,17 +188,20 @@ public class ImageGetter {
 		outState.putInt("height", height);
 		outState.putInt("request_code_select_picture", request_code_select_picture);
 		outState.putInt("request_code_crop", request_code_crop);
+		outState.putBoolean("use_camera", useCamera);
 	}
 
-	public static ImageGetter onRestoreInstanceState(Bundle savedInstanceState, Callbacks callbacks) {
+	public static ImageGetter onRestoreInstanceState(Bundle savedInstanceState, Activity activity, Callbacks callbacks) {
 		if(savedInstanceState.containsKey("crop") && savedInstanceState.containsKey("circular") && savedInstanceState.containsKey("uri")) {
-			ImageGetter imageGetter = new ImageGetter(savedInstanceState.getBoolean("crop"),
+			ImageGetter imageGetter = new ImageGetter(activity,
+					savedInstanceState.getBoolean("crop"),
 					savedInstanceState.getBoolean("circular"),
 					savedInstanceState.getBoolean("fixed"),
 					savedInstanceState.getInt("width"),
 					savedInstanceState.getInt("height"),
 					savedInstanceState.getInt("request_code_select_picture"),
 					savedInstanceState.getInt("request_code_crop"),
+					savedInstanceState.getBoolean("use_camera"),
 					callbacks);
 			imageGetter.setUri(Uri.parse(savedInstanceState.getString("uri")));
 			return imageGetter;
@@ -241,7 +220,7 @@ public class ImageGetter {
 	public void destroy(){
 		Log.d(DEBUG_TAG+".destroy", "deleteing... ");
 		try {
-			Log.d(DEBUG_TAG+".destroy", "deleteing... " + uri.getPath());
+			Log.d(DEBUG_TAG+".destroy", "uri.getPath: " + uri.getPath());
 			destroy(uri.getPath());
 		}catch (NullPointerException npe){
 			Log.d(DEBUG_TAG+".destroy", "nothing!");
@@ -251,7 +230,7 @@ public class ImageGetter {
 	public void destroy(String path){
 		Log.d(DEBUG_TAG+".destroy", "deleteing... ");
 		try {
-			Log.d(DEBUG_TAG+".destroy", "deleteing... " + path);
+			Log.d(DEBUG_TAG+".destroy", "received path: " + path);
 			new File(uri.getPath()).delete();
 		}catch (NullPointerException npe){
 			Log.d(DEBUG_TAG+".destroy", "nothing!");
@@ -259,9 +238,7 @@ public class ImageGetter {
 	}
 
 	public interface Callbacks {
-		Activity getActivity();
 		void setImage(String path, String tag);
-		boolean shouldDestroyFile(Source source);
 	}
 
 	public enum Source {

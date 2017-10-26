@@ -103,7 +103,7 @@ public class ImageUtils {
 		return deleteFile(Uri.parse(s));
 	}
 
-	public static void openImageIntent(Activity activity, int YOUR_SELECT_PICTURE_REQUEST_CODE, Uri outputImageUri) {
+	public static void openImageIntent(Activity activity, boolean useCamera, int YOUR_SELECT_PICTURE_REQUEST_CODE, Uri outputImageUri) {
 		final PackageManager packageManager = activity.getPackageManager();
 		Intent chooserIntent = null;
 
@@ -112,7 +112,7 @@ public class ImageUtils {
 		List<Intent> cameraIntents = null;
 
 		// Camera.
-		if(PermissionUtils.checkPermission(activity, PermissionUtils.Permission.camera)) {
+		if(useCamera && PermissionUtils.checkPermission(activity, PermissionUtils.Permission.camera)) {
 			cameraIntents = new ArrayList<>();
 			final Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 			final List<ResolveInfo> listCam = packageManager.queryIntentActivities(captureIntent, 0);

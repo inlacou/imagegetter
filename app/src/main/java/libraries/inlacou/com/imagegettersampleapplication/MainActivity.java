@@ -59,7 +59,9 @@ public class MainActivity extends AppCompatActivity
 			@Override
 			public void onClick(View v) {
 				if(imageGetter==null) imageGetter = new ImageGetter(MainActivity.this, true, false, false, -1, -1,
-						REQUEST_CODE_SELECT_PICTURE, REQUEST_CODE_CROP, getImageGetterCallbacks());
+						REQUEST_CODE_SELECT_PICTURE, REQUEST_CODE_CROP,
+						false,
+						getImageGetterCallbacks());
 				imageGetter.start("");
 			}
 		});
@@ -68,18 +70,8 @@ public class MainActivity extends AppCompatActivity
 	public ImageGetter.Callbacks getImageGetterCallbacks(){
 		return new ImageGetter.Callbacks() {
 			@Override
-			public Activity getActivity() {
-				return MainActivity.this;
-			}
-
-			@Override
 			public void setImage(String path, String tag) {
 				ImageUtils.setImageFromMemory(MainActivity.this, path, 1024, imageView, true, true);
-			}
-
-			@Override
-			public boolean shouldDestroyFile(ImageGetter.Source source) {
-				return true;
 			}
 		};
 	}
@@ -137,7 +129,7 @@ public class MainActivity extends AppCompatActivity
 	}
 
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
-		imageGetter = ImageGetter.onRestoreInstanceState(savedInstanceState, getImageGetterCallbacks());
+		imageGetter = ImageGetter.onRestoreInstanceState(savedInstanceState, this, getImageGetterCallbacks());
 	}
 
 	@SuppressWarnings("StatementWithEmptyBody")
