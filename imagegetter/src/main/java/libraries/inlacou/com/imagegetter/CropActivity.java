@@ -121,9 +121,9 @@ public class CropActivity extends AppCompatActivity {
 			Log.d(DEBUG_TAG, "action_complete_crop");
 			progressDialog.show();
 			Log.d(DEBUG_TAG, "before: getCroppedImageAsync");
-			cropImageView.setOnGetCroppedImageCompleteListener(new CropImageView.OnGetCroppedImageCompleteListener() {
+			cropImageView.setOnCropImageCompleteListener(new CropImageView.OnCropImageCompleteListener() {
 				@Override
-				public void onGetCroppedImageComplete(CropImageView view, Bitmap bitmap, Exception error) {
+				public void onCropImageComplete(CropImageView view, CropImageView.CropResult result) {
 					try {
 						Log.d(DEBUG_TAG, "uri: " + uri);
 						//Write file
@@ -137,12 +137,12 @@ public class CropActivity extends AppCompatActivity {
 							stream = new FileOutputStream(filename);
 							//stream = CropActivity.this.openFileOutput(filename, Context.MODE_PRIVATE);
 						}
-						bitmap.compress(Bitmap.CompressFormat.JPEG, 75, stream);
+						result.getBitmap().compress(Bitmap.CompressFormat.JPEG, 75, stream);
 						Log.d(DEBUG_TAG, "filename: " + filename);
 
 						//Cleanup
 						stream.close();
-						bitmap.recycle();
+						result.getBitmap().recycle();
 
 						//Pop intent
 						Intent intent = new Intent();
