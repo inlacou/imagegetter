@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity
 						false,
 						true,
 						true,
-						false,
+						true,
 						-1,
 						-1,
 						REQUEST_CODE_SELECT_PICTURE,
