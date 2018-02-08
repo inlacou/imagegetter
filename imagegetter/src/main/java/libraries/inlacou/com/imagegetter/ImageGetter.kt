@@ -34,8 +34,8 @@ class ImageGetter(private val activity: Activity,
 	var uri: Uri? = null
 	private var tag: String? = null
 
-	fun start(tag: String, destroyPrevious: Boolean = false) {
-		if(destroyPrevious) destroy()
+	fun start(tag: String, destroyPrevious: Boolean = false) { //It's false until below TODO is addressed
+		if(destroyPrevious) destroy()	//TODO Hmmm I destroy here, but if I dont finish the process... it's still deleted (confirmed)
 		this.uri = ImageUtils.generateURI(activity)
 		Log.d(DEBUG_TAG + ".start", "uri: " + uri)
 		this.tag = tag

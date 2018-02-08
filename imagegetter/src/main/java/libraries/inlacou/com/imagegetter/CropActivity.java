@@ -65,7 +65,7 @@ public class CropActivity extends AppCompatActivity {
 		initialize();
 		populate();
 
-		Toolbar toolbar = (Toolbar) findViewById(R.id.activity_circle_info_toolbar);
+		Toolbar toolbar = findViewById(R.id.activity_circle_info_toolbar);
 		if (toolbar != null) {
 			try {
 				toolbar.setTitleTextColor(Color.WHITE);
