@@ -34,8 +34,8 @@ class ImageGetter(private val activity: Activity,
 	var uri: Uri? = null
 	private var tag: String? = null
 
-	fun start(tag: String) {
-		destroy()
+	fun start(tag: String, destroyPrevious: Boolean = false) {
+		if(destroyPrevious) destroy()
 		this.uri = ImageUtils.generateURI(activity)
 		Log.d(DEBUG_TAG + ".start", "uri: " + uri)
 		this.tag = tag
