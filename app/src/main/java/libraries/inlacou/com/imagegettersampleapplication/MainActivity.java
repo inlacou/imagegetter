@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity
 						REQUEST_CODE_SELECT_PICTURE,
 						REQUEST_CODE_CROP,
 						getImageGetterCallbacks());
-				imageGetter.start("");
+				imageGetter.start("", true);
 			}
 		});
 	}

@@ -3,11 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://F:\repositories\libraries\imagegetter\app\app.iml" filepath="F:\repositories\libraries\imagegetter\app\app.iml" />
       <module fileurl="file://$PROJECT_DIR$/imagegetter.iml" filepath="$PROJECT_DIR$/imagegetter.iml" />
-      <module fileurl="file://F:\repositories\libraries\imagegetter\imagegetter.iml" filepath="F:\repositories\libraries\imagegetter\imagegetter.iml" />
       <module fileurl="file://$PROJECT_DIR$/imagegetter/imagegetter-imagegetter.iml" filepath="$PROJECT_DIR$/imagegetter/imagegetter-imagegetter.iml" />
-      <module fileurl="file://F:\repositories\libraries\imagegetter\imagegetter\imagegetter-imagegetter.iml" filepath="F:\repositories\libraries\imagegetter\imagegetter\imagegetter-imagegetter.iml" />
     </modules>
   </component>
 </project>
