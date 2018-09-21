@@ -40,7 +40,7 @@ public class ImageUtils {
 	public static final String FORMAT = "jpg";
 	public static final Bitmap.CompressFormat COMPRESS_FORMAT = Bitmap.CompressFormat.PNG;
 
-	public static String getUniqueImageFilename(){
+	private static String getUniqueImageFilename(){
 		return "img_"+ System.currentTimeMillis() + "."+ImageUtils.FORMAT;
 	}
 
@@ -80,13 +80,15 @@ public class ImageUtils {
 
 	public static Uri generateURI(Context context){
 		final File root = new File(Environment.getExternalStorageDirectory() + File.separator + context.getString(R.string.app_name) + File.separator);
-		Log.d(DEBUG_TAG+".openImageIntent", "root: " + Environment.getExternalStorageDirectory() + File.separator + context.getString(R.string.app_name) + File.separator);
+		Log.d(DEBUG_TAG+".generateURI", "root: " + Environment.getExternalStorageDirectory() + File.separator + context.getString(R.string.app_name) + File.separator);
 		root.mkdirs();
+		Log.d(DEBUG_TAG+".generateURI", "root exists: " + root.exists());
 		final String fname = ImageUtils.getUniqueImageFilename();
-		Log.d(DEBUG_TAG+".openImageIntent", "filename: " + fname);
+		Log.d(DEBUG_TAG+".generateURI", "filename: " + fname);
 		final File sdImageMainDirectory = new File(root, fname);
+		Log.d(DEBUG_TAG+".generateURI", "sdImageMainDirectory exists: " + sdImageMainDirectory.exists());
 		Uri outputImageUri = Uri.fromFile(sdImageMainDirectory);
-		Log.d(DEBUG_TAG+".openImageIntent", "outputImageUri: " + outputImageUri);
+		Log.d(DEBUG_TAG+".generateURI", "outputImageUri: " + outputImageUri);
 		return outputImageUri;
 	}
 
