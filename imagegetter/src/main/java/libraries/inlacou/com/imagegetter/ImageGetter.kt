@@ -84,9 +84,14 @@ class ImageGetter(private val activity: Activity,
 					MediaStore.ACTION_IMAGE_CAPTURE == data.action
 				}
 
-				data?.data?.let { //This is an additional check, because some cameras do not say they are a camera at least in the previous way
-					if(it.lastPathSegment==uri?.lastPathSegment){
+				Log.d(DEBUG_TAG, "isCamera | primary check | $isCamera")
+
+				data?.data.let { data -> //This is an additional check, because some cameras do not say they are a camera at least in the previous way
+					if(data!=null && data.lastPathSegment==uri?.lastPathSegment){
 						isCamera = true
+						Log.d(DEBUG_TAG, "isCamera | additional check | $isCamera")
+					}else{
+						Log.d(DEBUG_TAG, "isCamera | additional check | $isCamera")
 					}
 				}
 

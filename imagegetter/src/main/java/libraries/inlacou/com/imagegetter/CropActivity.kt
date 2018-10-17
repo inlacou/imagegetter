@@ -98,49 +98,54 @@ class CropActivity : AppCompatActivity() {
 
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		Log.d(DEBUG_TAG, "onOptionsItemSelected")
-		if (item.itemId == android.R.id.home) {
-			Log.d(DEBUG_TAG, "home")
-			onBackPressed()
-			return true
-		} else if (item.itemId == R.id.action_complete_crop) {
-			Log.d(DEBUG_TAG, "action_complete_crop")
-			progressDialog?.show()
-			Log.d(DEBUG_TAG, "before: getCroppedImageAsync")
-			cropImageView?.setOnCropImageCompleteListener { view, result ->
-				try {
-					Log.d(DEBUG_TAG, "uri: $uri")
-					//Write file
-
-					val filename = try {
-						uri?.toString()!!.replace("file:", "")
-					} catch (fnfe: FileNotFoundException) {
-						ImageUtils.generateURI(this.applicationContext).path
-					}
-					Log.d(DEBUG_TAG, "filename: $filename")
-					val stream = FileOutputStream(filename)
-
-					result.bitmap.compress(Bitmap.CompressFormat.JPEG, 75, stream)
-
-					//Cleanup
-					stream.close()
-					result.bitmap.recycle()
-
-					//Pop intent
-					val intent = Intent()
-					intent.putExtra(RESPONSE_EXTRA_BITMAP, filename)
-					setResult(Activity.RESULT_OK, intent)
-					progressDialog?.dismiss()
-					finish()
-				} catch (e: Exception) {
-					e.printStackTrace()
-					progressDialog?.dismiss()
-					finish()
-				}
+		when(item.itemId) {
+			 android.R.id.home -> {
+				Log.d(DEBUG_TAG, "home")
+				onBackPressed()
+				return true
 			}
-			cropImageView?.getCroppedImageAsync()
-			return true
-		} else {
-			return super.onOptionsItemSelected(item)
+			R.id.action_complete_crop -> {
+				Log.d(DEBUG_TAG, "action_complete_crop")
+				progressDialog?.show()
+				Log.d(DEBUG_TAG, "before: getCroppedImageAsync")
+				cropImageView?.setOnCropImageCompleteListener { view, result ->
+					try {
+						Log.d(DEBUG_TAG, "uri: $uri")
+						//Write file
+
+						var filename = ""
+						var stream: FileOutputStream
+						try {
+							filename = uri?.toString()!!.replace("file:", "")
+							stream = FileOutputStream(filename)
+						} catch (fnfe: FileNotFoundException) {
+							filename = ImageUtils.generateURI(this.applicationContext).path
+							stream = FileOutputStream(filename)
+						}
+						Log.d(DEBUG_TAG, "filename: $filename")
+
+						result.bitmap.compress(Bitmap.CompressFormat.JPEG, 75, stream)
+
+						//Cleanup
+						stream.close()
+						result.bitmap.recycle()
+
+						//Pop intent
+						val intent = Intent()
+						intent.putExtra(RESPONSE_EXTRA_BITMAP, filename)
+						setResult(Activity.RESULT_OK, intent)
+						progressDialog?.dismiss()
+						finish()
+					} catch (e: Exception) {
+						e.printStackTrace()
+						progressDialog?.dismiss()
+						finish()
+					}
+				}
+				cropImageView?.getCroppedImageAsync()
+				return true
+			}
+			else -> return super.onOptionsItemSelected(item)
 		}
 	}
 
