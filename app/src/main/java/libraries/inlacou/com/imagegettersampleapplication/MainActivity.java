@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity
 		return new ImageGetter.Callbacks() {
 			@Override
 			public void setImage(String path, String tag) {
-				ImageUtils.setImageFromMemory(MainActivity.this, path, 1024, imageView, true, true);
+				ImageUtils.INSTANCE.setImageFromMemory(MainActivity.this, path, 1024, imageView, true, true);
 			}
 		};
 	}
