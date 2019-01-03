@@ -9,14 +9,10 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.util.Log
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-
 import com.theartofdev.edmodo.cropper.CropImageView
-
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 
@@ -136,14 +132,12 @@ class CropActivity : AppCompatActivity() {
 	}
 
 	companion object {
-
-		private val DEBUG_TAG = CropActivity::class.java.name
-		val INTENT_EXTRA_URI = "intent_extra_uri"
-		val RESPONSE_EXTRA_BITMAP = "RESPONSE_EXTRA_BITMAP"
-		val INTENT_EXTRA_CIRCULAR = "INTENT_EXTRA_CIRCULAR"
-		val INTENT_EXTRA_WIDTH = "INTENT_EXTRA_WIDTH"
-		val INTENT_EXTRA_HEIGHT = "INTENT_EXTRA_HEIGHT"
-		val INTENT_EXTRA_FIXED = "INTENT_EXTRA_FIXED"
+		const val INTENT_EXTRA_URI = "intent_extra_uri"
+		const val RESPONSE_EXTRA_BITMAP = "RESPONSE_EXTRA_BITMAP"
+		const val INTENT_EXTRA_CIRCULAR = "INTENT_EXTRA_CIRCULAR"
+		const val INTENT_EXTRA_WIDTH = "INTENT_EXTRA_WIDTH"
+		const val INTENT_EXTRA_HEIGHT = "INTENT_EXTRA_HEIGHT"
+		const val INTENT_EXTRA_FIXED = "INTENT_EXTRA_FIXED"
 
 		fun navigateForResult(activity: AppCompatActivity, uri: String, circular: Boolean, fixed: Boolean, width: Int, height: Int, requestCode: Int) {
 			val intent = Intent(activity, CropActivity::class.java)

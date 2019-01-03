@@ -2,8 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@android:color/black">
+    android:orientation="vertical">
     <android.support.v7.widget.Toolbar
         android:id="@+id/activity_circle_info_toolbar"
         android:layout_height="wrap_content"
@@ -15,7 +14,6 @@
 
     <!-- Image Cropper fill the remaining available height -->
     <com.theartofdev.edmodo.cropper.CropImageView
-        xmlns:custom="http://schemas.android.com/apk/res-auto"
         android:id="@+id/cropImageView"
         android:layout_width="match_parent"
         android:layout_height="0dp"

@@ -29,8 +29,7 @@ import java.io.IOException
 import java.util.ArrayList
 
 object ImageUtils {
-	private val DEBUG_TAG = ImageUtils::class.java.name
-	val FORMAT = "jpg"
+	private const val FORMAT = "jpg"
 	val COMPRESS_FORMAT: Bitmap.CompressFormat = Bitmap.CompressFormat.PNG
 
 	private val uniqueImageFilename: String
@@ -55,14 +54,12 @@ object ImageUtils {
 	}
 
 	fun byteArrayToBase64String(bytes: ByteArray): String {
-		val s = Base64.encodeToString(bytes, Base64.DEFAULT)
-		return s
+		return Base64.encodeToString(bytes, Base64.DEFAULT)
 	}
 
 	fun getDawableResource(c: Context, ImageName: String): Drawable {
 		return c.resources.getDrawable(c.resources.getIdentifier(ImageName, "drawable", c.packageName))
 	}
-
 
 	fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
 		val stream = ByteArrayOutputStream()
@@ -75,8 +72,7 @@ object ImageUtils {
 		root.mkdirs()
 		val fname = ImageUtils.uniqueImageFilename
 		val sdImageMainDirectory = File(root, fname)
-		val outputImageUri = Uri.fromFile(sdImageMainDirectory)
-		return outputImageUri
+		return Uri.fromFile(sdImageMainDirectory)
 	}
 
 	fun deleteFile(uri: Uri): Boolean {
@@ -100,7 +96,7 @@ object ImageUtils {
 		var cameraIntents: MutableList<Intent>? = null
 
 		// Camera.
-		if (useCamera && PermissionUtils.checkPermission(activity, PermissionUtils.Permission.camera)) {
+		if (useCamera && PermissionUtils.permissionAllowed(activity, PermissionUtils.Permission.camera)) {
 			cameraIntents = ArrayList()
 			val captureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 			val listCam = packageManager.queryIntentActivities(captureIntent, 0)
@@ -116,7 +112,7 @@ object ImageUtils {
 		}
 
 		// Filesystem.
-		if (useGallery && PermissionUtils.checkPermission(activity, PermissionUtils.Permission.externalStorage)) {
+		if (useGallery && PermissionUtils.permissionAllowed(activity, PermissionUtils.Permission.externalStorage)) {
 			galleryIntent = Intent()
 			galleryIntent.type = "image/*"
 			galleryIntent.action = Intent.ACTION_GET_CONTENT
@@ -172,7 +168,7 @@ object ImageUtils {
 		return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
 	}
 
-	fun scaleBitmap(bitmap: Bitmap, width: Int, height: Int): Bitmap {
+	private fun scaleBitmap(bitmap: Bitmap, width: Int, height: Int): Bitmap {
 		return try {
 			Bitmap.createScaledBitmap(bitmap, width, height, true)
 		} catch (iae: IllegalArgumentException) {

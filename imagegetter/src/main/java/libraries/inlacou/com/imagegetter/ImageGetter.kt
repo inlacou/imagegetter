@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import libraries.inlacou.com.imagegetter.PermissionUtils.DEBUG_TAG
 
 import java.io.File
 import java.io.FileInputStream

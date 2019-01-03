@@ -6,19 +6,20 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 
 /**
  * Created by inlacoubyv on 19/11/15.
  */
 public class PermissionUtils {
 
-	public static final String DEBUG_TAG = PermissionUtils.class.getName();
+	//Should handle negatives http://developer.android.com/intl/es/training/permissions/requesting.html
 
-	//TODO handle negatives http://developer.android.com/intl/es/training/permissions/requesting.html
-
-	public static boolean checkPermission(Context c, Permission permission) {
+	public static boolean permissionAllowed(Context c, Permission permission) {
 		return ContextCompat.checkSelfPermission(c, permission.permission) == PackageManager.PERMISSION_GRANTED;
+	}
+	
+	public static boolean permissionNotAllowed(Context c, Permission permission) {
+		return ContextCompat.checkSelfPermission(c, permission.permission) != PackageManager.PERMISSION_GRANTED;
 	}
 
 	public static void checkGetIfNotPermission(Activity activity, Permission permission, Callbacks callbacks) {
