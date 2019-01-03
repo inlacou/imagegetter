@@ -38,14 +38,12 @@ class ImageGetter(private val activity: Activity,
 	fun start(tag: String, destroyPrevious: Boolean = false) { //It's false until below TODO is addressed
 		if(destroyPrevious) destroy()	//TODO Hmmm I destroy here, but if I dont finish the process... it's still deleted (confirmed)
 		this.uri = ImageUtils.generateURI(activity)
-		Log.d("$DEBUG_TAG.start", "uri: $uri")
 		this.tag = tag
 		checkExternalStoragePermission()
 	}
 
 	fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
 		for (i in permissions.indices) {
-			Log.d(DEBUG_TAG,  "$i onActivityResult($requestCode, ${permissions[i]}, ${grantResults[i]})")
 			if (permissions[i].equals(PermissionUtils.Permission.externalStorage.permission, ignoreCase = true)) {
 				if(useCamera) {
 					checkCameraPermission(uri)
@@ -84,14 +82,9 @@ class ImageGetter(private val activity: Activity,
 					MediaStore.ACTION_IMAGE_CAPTURE == data.action
 				}
 
-				Log.d(DEBUG_TAG, "isCamera | primary check | $isCamera")
-
 				data?.data.let { data -> //This is an additional check, because some cameras do not say they are a camera at least in the previous way
 					if(data!=null && data.lastPathSegment==uri?.lastPathSegment){
 						isCamera = true
-						Log.d(DEBUG_TAG, "isCamera | additional check | $isCamera")
-					}else{
-						Log.d(DEBUG_TAG, "isCamera | additional check | $isCamera")
 					}
 				}
 
@@ -114,12 +107,10 @@ class ImageGetter(private val activity: Activity,
 				if (!crop) {
 					callbacks.setImage(selectedImageUri.toString(), tag)
 				} else {
-					Log.d("$DEBUG_TAG.onActivityResult", "launching CircularCropActivity intent")
 					launchCropActivity(selectedImageUri)
 				}
 			} else if (requestCode == request_code_crop) {
 				val filename = data!!.getStringExtra(CropActivity.RESPONSE_EXTRA_BITMAP)
-				Log.d("$DEBUG_TAG.onActivityResult", "3 - filename: $filename")
 				callbacks.setImage(filename, tag)
 				uri = Uri.parse(filename)
 			}
@@ -152,10 +143,12 @@ class ImageGetter(private val activity: Activity,
 	}
 
 	fun destroy() {
-		Log.d("$DEBUG_TAG.destroy", "deleteing uri?.path... ")
+		Log.d("$DEBUG_TAG.destroy", "deleteing uri?.path... ${uri?.path}")
 		try {
-			Log.d("$DEBUG_TAG.destroy", "uri?.path: " + uri?.path)
-			uri?.path?.let { destroy(it) }
+			uri?.path?.let {
+				destroy(it)
+				Log.d("$DEBUG_TAG.destroy", "deleted path: $it")
+			}
 		} catch (npe: NullPointerException) {
 			Log.d("$DEBUG_TAG.destroy", "nothing!")
 		}
@@ -165,8 +158,8 @@ class ImageGetter(private val activity: Activity,
 	fun destroy(path: String) {
 		Log.d("$DEBUG_TAG.destroy", "deleteing $path... ")
 		try {
-			Log.d("$DEBUG_TAG.destroy", "received path: $path")
 			File(path).delete()
+			Log.d("$DEBUG_TAG.destroy", "deleted path: $path")
 		} catch (npe: NullPointerException) {
 			Log.d("$DEBUG_TAG.destroy", "nothing!")
 		}
@@ -182,8 +175,6 @@ class ImageGetter(private val activity: Activity,
 
 		@Throws(IOException::class)
 		fun getBitmapFromPath(context: Context, filename: String, size: Int): Bitmap {
-			Log.d("$DEBUG_TAG.getBitmapFromPath", "filename: $filename")
-			Log.d("$DEBUG_TAG.getBitmapFromPath", "size: $size")
 			return try {
 				val inputStream = FileInputStream(filename)
 				var bitmap = BitmapFactory.decodeStream(inputStream)
@@ -191,7 +182,6 @@ class ImageGetter(private val activity: Activity,
 				inputStream.close()
 				bitmap
 			} catch (fnfe: FileNotFoundException) {
-				Log.d("$DEBUG_TAG.getBitmapFromPath", "FileNotFoundException! Trying other approach...")
 				ImageUtils.scaleBitmapKeepAspectRatio(MediaStore.Images.Media.getBitmap(
 						context.contentResolver, Uri.parse(filename)), size)
 			}

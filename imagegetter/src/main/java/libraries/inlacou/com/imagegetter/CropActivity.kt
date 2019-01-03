@@ -34,7 +34,6 @@ class CropActivity : AppCompatActivity() {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		Log.d(DEBUG_TAG, "onCreate")
 		setContentView(R.layout.activity_crop)
 
 		uri = intent.getParcelableExtra(INTENT_EXTRA_URI)
@@ -42,12 +41,6 @@ class CropActivity : AppCompatActivity() {
 		fixed = intent.getBooleanExtra(INTENT_EXTRA_FIXED, false)
 		width = intent.getIntExtra(INTENT_EXTRA_WIDTH, 1)
 		height = intent.getIntExtra(INTENT_EXTRA_HEIGHT, 1)
-
-		Log.d(DEBUG_TAG, "uri: $uri")
-		Log.d(DEBUG_TAG, "circular: $circular")
-		Log.d(DEBUG_TAG, "fixed: $fixed")
-		Log.d(DEBUG_TAG, "width: $width")
-		Log.d(DEBUG_TAG, "height: $height")
 
 		initialize()
 		populate()
@@ -97,22 +90,16 @@ class CropActivity : AppCompatActivity() {
 	}
 
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
-		Log.d(DEBUG_TAG, "onOptionsItemSelected")
 		when(item.itemId) {
 			 android.R.id.home -> {
-				Log.d(DEBUG_TAG, "home")
 				onBackPressed()
 				return true
 			}
 			R.id.action_complete_crop -> {
-				Log.d(DEBUG_TAG, "action_complete_crop")
 				progressDialog?.show()
-				Log.d(DEBUG_TAG, "before: getCroppedImageAsync")
 				cropImageView?.setOnCropImageCompleteListener { view, result ->
 					try {
-						Log.d(DEBUG_TAG, "uri: $uri")
 						//Write file
-
 						var filename = ""
 						var stream: FileOutputStream
 						try {
@@ -122,7 +109,6 @@ class CropActivity : AppCompatActivity() {
 							filename = ImageUtils.generateURI(this.applicationContext).path
 							stream = FileOutputStream(filename)
 						}
-						Log.d(DEBUG_TAG, "filename: $filename")
 
 						result.bitmap.compress(Bitmap.CompressFormat.JPEG, 75, stream)
 

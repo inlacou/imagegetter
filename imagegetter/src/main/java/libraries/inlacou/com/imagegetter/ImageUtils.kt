@@ -19,7 +19,6 @@ import android.os.Parcelable
 import android.provider.MediaStore
 import android.support.v4.content.ContextCompat
 import android.util.Base64
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 
@@ -57,7 +56,6 @@ object ImageUtils {
 
 	fun byteArrayToBase64String(bytes: ByteArray): String {
 		val s = Base64.encodeToString(bytes, Base64.DEFAULT)
-		Log.d(DEBUG_TAG, s)
 		return s
 	}
 
@@ -74,20 +72,14 @@ object ImageUtils {
 
 	fun generateURI(context: Context): Uri {
 		val root = File(Environment.getExternalStorageDirectory().toString() + File.separator + context.getString(R.string.app_name) + File.separator)
-		Log.d("$DEBUG_TAG.generateURI", "root: " + Environment.getExternalStorageDirectory() + File.separator + context.getString(R.string.app_name) + File.separator)
 		root.mkdirs()
-		Log.d("$DEBUG_TAG.generateURI", "root exists: " + root.exists())
 		val fname = ImageUtils.uniqueImageFilename
-		Log.d("$DEBUG_TAG.generateURI", "filename: $fname")
 		val sdImageMainDirectory = File(root, fname)
-		Log.d("$DEBUG_TAG.generateURI", "sdImageMainDirectory exists: " + sdImageMainDirectory.exists())
 		val outputImageUri = Uri.fromFile(sdImageMainDirectory)
-		Log.d("$DEBUG_TAG.generateURI", "outputImageUri: $outputImageUri")
 		return outputImageUri
 	}
 
 	fun deleteFile(uri: Uri): Boolean {
-		Log.d(DEBUG_TAG, "Trying to delete: $uri")
 		val fdelete = File(uri.path)
 		return if (fdelete.exists()) {
 			fdelete.delete()
@@ -189,23 +181,19 @@ object ImageUtils {
 	}
 
 	fun scaleBitmapKeepAspectRatio(bitmap: Bitmap, scaleSize: Int): Bitmap {
-		Log.d("$DEBUG_TAG.scaleBmKeepAspectRatio", "bitmap.getWidth: " + bitmap.width)
-		Log.d("$DEBUG_TAG.scaleBmKeepAspectRatio", "bitmap.getHeight: " + bitmap.height)
-		Log.d("$DEBUG_TAG.scaleBmKeepAspectRatio", "scaleSize: $scaleSize")
 		val originalWidth = bitmap.width
 		val originalHeight = bitmap.height
 		var newWidth = -1
 		var newHeight = -1
-		var multFactor = -1.0f
 		when {
 			originalHeight > originalWidth -> {
 				newHeight = scaleSize
-				multFactor = originalWidth.toFloat() / originalHeight.toFloat()
+				val multFactor = originalWidth.toFloat() / originalHeight.toFloat()
 				newWidth = (newHeight * multFactor).toInt()
 			}
 			originalWidth > originalHeight -> {
 				newWidth = scaleSize
-				multFactor = originalHeight.toFloat() / originalWidth.toFloat()
+				val multFactor = originalHeight.toFloat() / originalWidth.toFloat()
 				newHeight = (newWidth * multFactor).toInt()
 			}
 			originalHeight == originalWidth -> {
@@ -377,7 +365,6 @@ object ImageUtils {
 	}
 
 	fun setImageFromMemory(activity: Activity, filename: String, maxSize: Int, imageView: ImageView, adjustViewBounds: Boolean, setScaleType: Boolean) {
-		Log.d(DEBUG_TAG, ".setImage filename: $filename")
 		var selectedImage: Bitmap? = null
 		try {
 			selectedImage = ImageGetter.getBitmapFromPath(activity, filename, maxSize)
