@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import timber.log.Timber
 
 import java.io.File
 import java.io.FileInputStream
@@ -19,6 +20,7 @@ import java.io.IOException
  * Created by inlacou on 26/04/16.
  */
 class ImageGetter(private val activity: Activity,
+                  private val log: Boolean = false,
                   private val crop: Boolean = true,
                   private val circular: Boolean = true,
                   private val fixed: Boolean = true,
@@ -33,15 +35,26 @@ class ImageGetter(private val activity: Activity,
 	var uri: Uri? = null
 	private var tag: String? = null
 
+	private fun log(s: String){
+		if(log) Timber.d(s)
+	}
+
+	private fun log(tag: String, s: String){
+		if(log) Timber.d("$tag | $s")
+	}
+
 	@JvmOverloads
 	fun start(tag: String, destroyPrevious: Boolean = false) { //It's false until below TODO is addressed
+		log("start with tag: $tag")
 		if(destroyPrevious) destroy()	//TODO Hmmm I destroy here, but if I dont finish the process... it's still deleted (confirmed)
 		this.uri = ImageUtils.generateURI(activity)
+		log("start with uri: ${uri.toString()}")
 		this.tag = tag
 		checkExternalStoragePermission()
 	}
 
 	fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+		log("onRequestPermissionsResult")
 		for (i in permissions.indices) {
 			if (permissions[i].equals(PermissionUtils.Permission.externalStorage.permission, ignoreCase = true)) {
 				if(useCamera) {
@@ -56,7 +69,8 @@ class ImageGetter(private val activity: Activity,
 	}
 
 	private fun checkExternalStoragePermission() {
-		val aux = this.uri
+		val aux = uri
+		log("checkExternalStoragePermission with uri: ${uri.toString()}")
 		PermissionUtils.checkGetIfNotPermission(activity, PermissionUtils.Permission.externalStorage) {
 			if (useCamera) {
 				checkCameraPermission(aux)
@@ -67,12 +81,14 @@ class ImageGetter(private val activity: Activity,
 	}
 
 	private fun checkCameraPermission(aux: Uri?) {
+		log("checkCameraPermission with uri: ${aux.toString()}")
 		PermissionUtils.checkGetIfNotPermission(activity,
 				PermissionUtils.Permission.camera
 		) { ImageUtils.openImageIntent(activity, useCamera, useGallery, request_code_select_picture, aux) }
 	}
 
 	fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+		log("onActivityResult")
 		if (resultCode == Activity.RESULT_OK) {
 			if (requestCode == request_code_select_picture) {
 				var isCamera: Boolean = if (data == null) {
@@ -120,8 +136,10 @@ class ImageGetter(private val activity: Activity,
 	}
 
 	private fun launchCropActivity(selectedImageUri: Uri?) {
+		log("launchCropActivity")
 		val intent = Intent(activity, CropActivity::class.java)
 		intent.putExtra(CropActivity.INTENT_EXTRA_URI, selectedImageUri)
+		intent.putExtra(CropActivity.INTENT_EXTRA_LOG, log)
 		intent.putExtra(CropActivity.INTENT_EXTRA_CIRCULAR, circular)
 		intent.putExtra(CropActivity.INTENT_EXTRA_WIDTH, width)
 		intent.putExtra(CropActivity.INTENT_EXTRA_HEIGHT, height)
@@ -130,7 +148,8 @@ class ImageGetter(private val activity: Activity,
 	}
 
 	fun onSaveInstanceState(outState: Bundle) {
-		if (uri != null) outState.putString("uri", uri!!.toString())
+		log("onSaveInstanceState")
+		uri?.let { outState.putString("uri", it.toString()) }
 		outState.putBoolean("crop", crop)
 		outState.putBoolean("circular", circular)
 		outState.putBoolean("fixed", fixed)
@@ -142,27 +161,26 @@ class ImageGetter(private val activity: Activity,
 	}
 
 	fun destroy() {
-		Log.d("$DEBUG_TAG.destroy", "deleteing uri?.path... ${uri?.path}")
+		log("destroy", "deleteing uri?.path... ${uri?.path}")
 		try {
 			uri?.path?.let {
 				destroy(it)
-				Log.d("$DEBUG_TAG.destroy", "deleted path: $it")
+				log("destroy", "deleted path: $it")
 			}
 		} catch (npe: NullPointerException) {
-			Log.d("$DEBUG_TAG.destroy", "nothing!")
+			log("destroy", "nothing!")
 		}
 
 	}
 
 	fun destroy(path: String) {
-		Log.d("$DEBUG_TAG.destroy", "deleteing $path... ")
+		log("destroy", "deleteing $path... ")
 		try {
 			File(path).delete()
-			Log.d("$DEBUG_TAG.destroy", "deleted path: $path")
+			log("destroy", "deleted path: $path")
 		} catch (npe: NullPointerException) {
-			Log.d("$DEBUG_TAG.destroy", "nothing!")
+			log("destroy", "nothing!")
 		}
-
 	}
 
 	interface Callbacks {
@@ -170,8 +188,6 @@ class ImageGetter(private val activity: Activity,
 	}
 
 	companion object {
-		private val DEBUG_TAG = ImageGetter::class.java.simpleName
-
 		@Throws(IOException::class)
 		fun getBitmapFromPath(context: Context, filename: String, size: Int): Bitmap {
 			return try {
@@ -196,7 +212,7 @@ class ImageGetter(private val activity: Activity,
 		}
 
 		fun onRestoreInstanceState(savedInstanceState: Bundle, activity: Activity, callbacks: Callbacks): ImageGetter? {
-			if (savedInstanceState.containsKey("crop") && savedInstanceState.containsKey("circular") && savedInstanceState.containsKey("uri")) {
+			return if (savedInstanceState.containsKey("crop") && savedInstanceState.containsKey("circular") && savedInstanceState.containsKey("uri")) {
 				val imageGetter = ImageGetter(activity,
 						crop = savedInstanceState.getBoolean("crop"),
 						circular = savedInstanceState.getBoolean("circular"),
@@ -208,9 +224,11 @@ class ImageGetter(private val activity: Activity,
 						request_code_crop = savedInstanceState.getInt("request_code_crop"),
 						callbacks = callbacks)
 				imageGetter.uri = Uri.parse(savedInstanceState.getString("uri"))
-				return imageGetter
+				imageGetter
+			}else{
+				Timber.d("onRestoreInstanceState | nothing found on savedInstanceState")
+				null
 			}
-			return null
 		}
 	}
 

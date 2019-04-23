@@ -24,8 +24,9 @@ android {
 
 dependencies {
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
-	api 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
 	implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+	api 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
+	api 'com.jakewharton.timber:timber:4.7.1'
 }
 repositories {
 	mavenCentral()

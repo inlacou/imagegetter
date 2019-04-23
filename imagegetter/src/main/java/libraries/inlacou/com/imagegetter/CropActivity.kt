@@ -7,12 +7,15 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.theartofdev.edmodo.cropper.CropImageView
+import timber.log.Timber
+import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 
@@ -21,18 +24,29 @@ import java.io.FileOutputStream
  */
 class CropActivity : AppCompatActivity() {
 	private var cropImageView: CropImageView? = null
-	private var uri: Uri? = null
+	private lateinit var uri: Uri
+	private var log: Boolean = false
 	private var circular: Boolean = false
 	private var fixed: Boolean = false
 	private var width: Int = 0
 	private var height: Int = 0
 	private var progressDialog: ProgressDialog? = null
 
+	private fun log(s: String){
+		if(log) Timber.d(s)
+	}
+
+	private fun log(tag: String, s: String){
+		if(log) Timber.d("$tag | $s")
+	}
+
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
+		log("onCreate")
 		setContentView(R.layout.activity_crop)
 
 		uri = intent.getParcelableExtra(INTENT_EXTRA_URI)
+		log = intent.getBooleanExtra(INTENT_EXTRA_LOG, false)
 		circular = intent.getBooleanExtra(INTENT_EXTRA_CIRCULAR, false)
 		fixed = intent.getBooleanExtra(INTENT_EXTRA_FIXED, false)
 		width = intent.getIntExtra(INTENT_EXTRA_WIDTH, 1)
@@ -55,6 +69,7 @@ class CropActivity : AppCompatActivity() {
 	}
 
 	private fun initialize() {
+		log("initialize")
 		cropImageView = findViewById(R.id.cropImageView)
 		progressDialog = ProgressDialog(this)
 		progressDialog?.isIndeterminate = true
@@ -63,6 +78,7 @@ class CropActivity : AppCompatActivity() {
 	}
 
 	private fun populate() {
+		log("populate")
 		if (circular) {
 			cropImageView?.cropShape = CropImageView.CropShape.OVAL
 		}
@@ -80,12 +96,14 @@ class CropActivity : AppCompatActivity() {
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
+		log("onCreateOptionsMenu")
 		val menuInflater = menuInflater
 		menuInflater.inflate(R.menu.menu_circle_crop, menu)
 		return true
 	}
 
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
+		log("onOptionsItemSelected")
 		when(item.itemId) {
 			 android.R.id.home -> {
 				onBackPressed()
@@ -96,13 +114,15 @@ class CropActivity : AppCompatActivity() {
 				cropImageView?.setOnCropImageCompleteListener { view, result ->
 					try {
 						//Write file
-						var filename = ""
+						var filename: String
 						var stream: FileOutputStream
 						try {
-							filename = uri?.toString()!!.replace("file:", "")
+							filename = "${ImageUtils.getRootUri(this)}${uri.lastPathSegment}"
+							log("onOptionsItemSelected", "filename1: $filename")
 							stream = FileOutputStream(filename)
 						} catch (fnfe: FileNotFoundException) {
 							filename = ImageUtils.generateURI(this.applicationContext).path
+							log("onOptionsItemSelected", "filename2: $filename")
 							stream = FileOutputStream(filename)
 						}
 
@@ -133,6 +153,7 @@ class CropActivity : AppCompatActivity() {
 
 	companion object {
 		const val INTENT_EXTRA_URI = "intent_extra_uri"
+		const val INTENT_EXTRA_LOG = "intent_extra_log"
 		const val RESPONSE_EXTRA_BITMAP = "RESPONSE_EXTRA_BITMAP"
 		const val INTENT_EXTRA_CIRCULAR = "INTENT_EXTRA_CIRCULAR"
 		const val INTENT_EXTRA_WIDTH = "INTENT_EXTRA_WIDTH"

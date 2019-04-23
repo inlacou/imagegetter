@@ -18,9 +18,11 @@ import android.os.Environment
 import android.os.Parcelable
 import android.provider.MediaStore
 import android.support.v4.content.ContextCompat
+import android.support.v4.content.FileProvider
 import android.util.Base64
 import android.view.View
 import android.widget.ImageView
+import timber.log.Timber
 
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -68,12 +70,23 @@ object ImageUtils {
 	}
 
 	fun generateURI(context: Context): Uri {
-		val root = File(Environment.getExternalStorageDirectory().toString() + File.separator + context.getString(R.string.app_name) + File.separator)
-		root.mkdirs()
 		val fname = ImageUtils.uniqueImageFilename
-		val sdImageMainDirectory = File(root, fname)
-		return Uri.fromFile(sdImageMainDirectory)
+		return ImageUtils.generateURI(context, fname)
 	}
+
+	fun generateURI(context: Context, fname: String): Uri {
+		Timber.d("generateUri")
+		val root = File(getRootUri(context))
+		Timber.d("generateUri | root: $root")
+		Timber.d("generateUri | root.mkdirs: ${root.mkdirs()}")
+		Timber.d("generateUri | fname: $fname")
+		val sdImageMainDirectory = File(root, fname)
+		Timber.d("generateUri | sdImageMainDirectory: $sdImageMainDirectory")
+		Timber.d("generateUri | resutl: ${FileProvider.getUriForFile(context, context.applicationContext.packageName + ".provider",sdImageMainDirectory)}")
+		return FileProvider.getUriForFile(context, context.applicationContext.packageName + ".provider",sdImageMainDirectory)
+	}
+
+	fun getRootUri(context: Context) = "${Environment.getExternalStorageDirectory()}${File.separator}${context.getString(R.string.app_name)}${File.separator}"
 
 	fun deleteFile(uri: Uri): Boolean {
 		val fdelete = File(uri.path)
@@ -99,6 +112,10 @@ object ImageUtils {
 		if (useCamera && PermissionUtils.permissionAllowed(activity, PermissionUtils.Permission.camera)) {
 			cameraIntents = ArrayList()
 			val captureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+			/* WIP for Video
+			val captureIntent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+			//time limit for video
+			captureIntent.putExtra("android.intent.extra.durationLimit", 15)*/
 			val listCam = packageManager.queryIntentActivities(captureIntent, 0)
 			for (res in listCam) {
 				val packageName = res.activityInfo.packageName
