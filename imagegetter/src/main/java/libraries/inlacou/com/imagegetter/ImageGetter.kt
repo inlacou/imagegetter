@@ -138,7 +138,7 @@ class ImageGetter(private val activity: Activity,
 	private fun launchCropActivity(selectedImageUri: Uri?) {
 		log("launchCropActivity")
 		val intent = Intent(activity, CropActivity::class.java)
-		intent.putExtra(CropActivity.INTENT_EXTRA_URI, selectedImageUri)
+		selectedImageUri?.let { intent.putExtra(CropActivity.INTENT_EXTRA_URI, selectedImageUri) }
 		intent.putExtra(CropActivity.INTENT_EXTRA_LOG, log)
 		intent.putExtra(CropActivity.INTENT_EXTRA_CIRCULAR, circular)
 		intent.putExtra(CropActivity.INTENT_EXTRA_WIDTH, width)

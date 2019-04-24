@@ -24,7 +24,7 @@ import java.io.FileOutputStream
  */
 class CropActivity : AppCompatActivity() {
 	private var cropImageView: CropImageView? = null
-	private lateinit var uri: Uri
+	private var uri: Uri? = null
 	private var log: Boolean = false
 	private var circular: Boolean = false
 	private var fixed: Boolean = false
@@ -45,7 +45,7 @@ class CropActivity : AppCompatActivity() {
 		log("onCreate")
 		setContentView(R.layout.activity_crop)
 
-		uri = intent.getParcelableExtra(INTENT_EXTRA_URI)
+		if(intent.hasExtra(INTENT_EXTRA_URI)) uri = intent.getParcelableExtra(INTENT_EXTRA_URI)
 		log = intent.getBooleanExtra(INTENT_EXTRA_LOG, false)
 		circular = intent.getBooleanExtra(INTENT_EXTRA_CIRCULAR, false)
 		fixed = intent.getBooleanExtra(INTENT_EXTRA_FIXED, false)
@@ -117,7 +117,7 @@ class CropActivity : AppCompatActivity() {
 						var filename: String
 						var stream: FileOutputStream
 						try {
-							filename = "${ImageUtils.getRootUri(this)}${uri.lastPathSegment}"
+							filename = "${ImageUtils.getRootUri(this)}${uri?.lastPathSegment}"
 							log("onOptionsItemSelected", "filename1: $filename")
 							stream = FileOutputStream(filename)
 						} catch (fnfe: FileNotFoundException) {
