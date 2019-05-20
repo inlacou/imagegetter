@@ -52,6 +52,8 @@ class CropActivity : AppCompatActivity() {
 		width = intent.getIntExtra(INTENT_EXTRA_WIDTH, 1)
 		height = intent.getIntExtra(INTENT_EXTRA_HEIGHT, 1)
 
+		Timber.d("CropActivity onCreate | uri: ${uri.toString()} | circular | fixed |")
+
 		initialize()
 		populate()
 
@@ -114,18 +116,10 @@ class CropActivity : AppCompatActivity() {
 				cropImageView?.setOnCropImageCompleteListener { view, result ->
 					try {
 						//Write file
-						var filename: String
-						var stream: FileOutputStream
-						try {
-							filename = "${ImageUtils.getRootUri(this)}${uri?.lastPathSegment}"
-							log("onOptionsItemSelected", "filename1: $filename")
-							stream = FileOutputStream(filename)
-						} catch (fnfe: FileNotFoundException) {
-							filename = ImageUtils.generateURI(this.applicationContext).path
-							log("onOptionsItemSelected", "filename2: $filename")
-							stream = FileOutputStream(filename)
-						}
+						val filename = "${ImageUtils.getRootUri(this)}${ImageUtils.uniqueImageFilename}"
+						val stream = FileOutputStream(filename)
 
+						log("onOptionsItemSelected", "filename: $filename")
 						result.bitmap.compress(Bitmap.CompressFormat.JPEG, 75, stream)
 
 						//Cleanup

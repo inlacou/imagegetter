@@ -34,7 +34,7 @@ object ImageUtils {
 	private const val FORMAT = "jpg"
 	val COMPRESS_FORMAT: Bitmap.CompressFormat = Bitmap.CompressFormat.PNG
 
-	private val uniqueImageFilename: String
+	val uniqueImageFilename: String
 		get() = "img_" + System.currentTimeMillis() + "." + ImageUtils.FORMAT
 
 	fun fromUri(contentResolver: ContentResolver, uri: Uri): Drawable? {
@@ -69,12 +69,7 @@ object ImageUtils {
 		return stream.toByteArray()
 	}
 
-	fun generateURI(context: Context): Uri {
-		val fname = ImageUtils.uniqueImageFilename
-		return ImageUtils.generateURI(context, fname)
-	}
-
-	fun generateURI(context: Context, fname: String): Uri {
+	fun generateURI(context: Context, fname: String = ImageUtils.uniqueImageFilename): Uri {
 		Timber.d("generateUri")
 		val root = File(getRootUri(context))
 		Timber.d("generateUri | root: $root")
