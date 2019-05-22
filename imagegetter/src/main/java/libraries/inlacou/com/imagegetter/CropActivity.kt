@@ -120,11 +120,13 @@ class CropActivity : AppCompatActivity() {
 						val stream = FileOutputStream(filename)
 
 						log("onOptionsItemSelected", "filename: $filename")
-						result.bitmap.compress(Bitmap.CompressFormat.JPEG, 75, stream)
+						result.bitmap.compress(ImageUtils.COMPRESS_FORMAT, 75, stream)
 
 						//Cleanup
 						stream.close()
 						result.bitmap.recycle()
+
+						uri?.let { ImageUtils.deleteFile("${ImageUtils.getRootUri(this)}${it.lastPathSegment}") }
 
 						//Pop intent
 						val intent = Intent()

@@ -20,17 +20,18 @@ import java.io.IOException
  * Created by inlacou on 26/04/16.
  */
 class ImageGetter(private val activity: Activity,
-                  private val log: Boolean = false,
-                  private val crop: Boolean = true,
-                  private val circular: Boolean = true,
-                  private val fixed: Boolean = true,
-                  private val useCamera: Boolean = true,
-                  private val useGallery: Boolean = true,
-                  private val width: Int = 1,
-                  private val height: Int = 1,
-                  private val request_code_select_picture: Int,
-                  private val request_code_crop: Int,
-                  private val callbacks: Callbacks) {
+				  private val log: Boolean = false,
+				  private val crop: Boolean = true,
+				  private val circular: Boolean = true,
+				  private val fixed: Boolean = true,
+				  private val useCamera: Boolean = true,
+				  private val useGallery: Boolean = true,
+				  private val format: Bitmap.CompressFormat = Bitmap.CompressFormat.PNG,
+				  private val width: Int = 1,
+				  private val height: Int = 1,
+				  private val request_code_select_picture: Int,
+				  private val request_code_crop: Int,
+				  private val callbacks: Callbacks) {
 
 	var uri: Uri? = null
 	private var tag: String? = null
@@ -50,6 +51,7 @@ class ImageGetter(private val activity: Activity,
 		this.uri = ImageUtils.generateURI(activity)
 		log("start with uri: ${uri.toString()}")
 		this.tag = tag
+		ImageUtils.COMPRESS_FORMAT = format
 		checkExternalStoragePermission()
 	}
 
@@ -231,5 +233,4 @@ class ImageGetter(private val activity: Activity,
 			}
 		}
 	}
-
 }

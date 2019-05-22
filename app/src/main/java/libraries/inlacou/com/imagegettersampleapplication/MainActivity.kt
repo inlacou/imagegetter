@@ -1,6 +1,7 @@
 package libraries.inlacou.com.imagegettersampleapplication
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -65,6 +66,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 						true,
 						true,
 						true,
+						Bitmap.CompressFormat.JPEG,
 						-1,
 						-1,
 						REQUEST_CODE_SELECT_PICTURE,

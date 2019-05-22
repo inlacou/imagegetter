@@ -6,6 +6,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Bitmap.CompressFormat.*
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Matrix
@@ -31,11 +32,14 @@ import java.io.IOException
 import java.util.ArrayList
 
 object ImageUtils {
-	private const val FORMAT = "jpg"
-	val COMPRESS_FORMAT: Bitmap.CompressFormat = Bitmap.CompressFormat.PNG
+	var COMPRESS_FORMAT: Bitmap.CompressFormat = PNG
 
 	val uniqueImageFilename: String
-		get() = "img_" + System.currentTimeMillis() + "." + ImageUtils.FORMAT
+		get() = "img_" + System.currentTimeMillis() + "." + when(COMPRESS_FORMAT){
+			JPEG -> "jpeg"
+			PNG -> "png"
+			WEBP -> "webp"
+		}
 
 	fun fromUri(contentResolver: ContentResolver, uri: Uri): Drawable? {
 		return try {
@@ -65,7 +69,7 @@ object ImageUtils {
 
 	fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
 		val stream = ByteArrayOutputStream()
-		bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+		bitmap.compress(PNG, 100, stream)
 		return stream.toByteArray()
 	}
 
@@ -84,14 +88,17 @@ object ImageUtils {
 	fun getRootUri(context: Context) = "${Environment.getExternalStorageDirectory()}${File.separator}${context.getString(R.string.app_name)}${File.separator}"
 
 	fun deleteFile(uri: Uri): Boolean {
-		val fdelete = File(uri.path)
-		return if (fdelete.exists()) {
-			fdelete.delete()
-		} else false
+		Timber.d("try to deleteFile $uri")
+		uri.path.let {
+			return if(it!=null) {
+				ImageUtils.deleteFile(it)
+			}else false
+		}
 	}
 
-	fun deleteFile(s: String): Boolean {
-		return deleteFile(Uri.parse(s))
+	fun deleteFile(path: String): Boolean {
+		Timber.d("try to delete $path")
+		return File(path).delete()
 	}
 
 	fun openImageIntent(activity: Activity, useCamera: Boolean, useGallery: Boolean, YOUR_SELECT_PICTURE_REQUEST_CODE: Int, outputImageUri: Uri?) {
@@ -343,7 +350,7 @@ object ImageUtils {
 		val drawable = ContextCompat.getDrawable(context, id)
 		val bitmap = (drawable as BitmapDrawable).bitmap
 		val byteArrayOutputStream = ByteArrayOutputStream()
-		bitmap.compress(Bitmap.CompressFormat.PNG, 0, byteArrayOutputStream)
+		bitmap.compress(PNG, 0, byteArrayOutputStream)
 		return byteArrayOutputStream.toByteArray()
 	}
 
@@ -356,7 +363,7 @@ object ImageUtils {
 	fun getFileDataFromDrawable(context: Context, drawable: Drawable): ByteArray {
 		val bitmap = (drawable as BitmapDrawable).bitmap
 		val byteArrayOutputStream = ByteArrayOutputStream()
-		bitmap.compress(Bitmap.CompressFormat.JPEG, 80, byteArrayOutputStream)
+		bitmap.compress(JPEG, 80, byteArrayOutputStream)
 		return byteArrayOutputStream.toByteArray()
 	}
 
@@ -368,7 +375,7 @@ object ImageUtils {
 	 */
 	fun getFileDataFromBitmap(context: Context, bitmap: Bitmap): ByteArray {
 		val byteArrayOutputStream = ByteArrayOutputStream()
-		bitmap.compress(Bitmap.CompressFormat.JPEG, 80, byteArrayOutputStream)
+		bitmap.compress(JPEG, 80, byteArrayOutputStream)
 		return byteArrayOutputStream.toByteArray()
 	}
 
