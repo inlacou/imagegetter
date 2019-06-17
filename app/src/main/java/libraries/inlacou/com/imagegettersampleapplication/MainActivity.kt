@@ -10,7 +10,6 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
@@ -31,7 +30,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 					ImageUtils.setImageFromMemory(
 							activity = this@MainActivity,
 							filename =  path,
-							maxSize = 1024,
+							maxImageSize = 1024,
 							imageView = imageView,
 							adjustViewBounds = true,
 							setScaleType = true)
@@ -69,6 +68,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 						Bitmap.CompressFormat.JPEG,
 						-1,
 						-1,
+						512,
 						REQUEST_CODE_SELECT_PICTURE,
 						REQUEST_CODE_CROP,
 						imageGetterCallbacks)

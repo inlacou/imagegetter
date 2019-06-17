@@ -3,11 +3,9 @@ package libraries.inlacou.com.imagegetter
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
@@ -15,8 +13,6 @@ import android.view.MenuItem
 import android.view.View
 import com.theartofdev.edmodo.cropper.CropImageView
 import timber.log.Timber
-import java.io.File
-import java.io.FileNotFoundException
 import java.io.FileOutputStream
 
 /**
@@ -30,6 +26,7 @@ class CropActivity : AppCompatActivity() {
 	private var fixed: Boolean = false
 	private var width: Int = 0
 	private var height: Int = 0
+	private var scaleSize: Int = -1
 	private var progressDialog: ProgressDialog? = null
 
 	private fun log(s: String){
@@ -46,11 +43,12 @@ class CropActivity : AppCompatActivity() {
 		setContentView(R.layout.activity_crop)
 
 		if(intent.hasExtra(INTENT_EXTRA_URI)) uri = intent.getParcelableExtra(INTENT_EXTRA_URI)
+		if(intent.hasExtra(INTENT_EXTRA_SCALE_SIZE)) scaleSize = intent.getIntExtra(INTENT_EXTRA_SCALE_SIZE, -1)
 		log = intent.getBooleanExtra(INTENT_EXTRA_LOG, false)
 		circular = intent.getBooleanExtra(INTENT_EXTRA_CIRCULAR, false)
-		fixed = intent.getBooleanExtra(INTENT_EXTRA_FIXED, false)
-		width = intent.getIntExtra(INTENT_EXTRA_WIDTH, 1)
-		height = intent.getIntExtra(INTENT_EXTRA_HEIGHT, 1)
+		fixed = intent.getBooleanExtra(INTENT_EXTRA_ASPECT_RATIO_FIXED, false)
+		width = intent.getIntExtra(INTENT_EXTRA_ASPECT_RATIO_WIDTH, 1)
+		height = intent.getIntExtra(INTENT_EXTRA_ASPECT_RATIO_HEIGHT, 1)
 
 		Timber.d("CropActivity onCreate | uri: ${uri.toString()} | circular | fixed |")
 
@@ -120,7 +118,12 @@ class CropActivity : AppCompatActivity() {
 						val stream = FileOutputStream(filename)
 
 						log("onOptionsItemSelected", "filename: $filename")
-						result.bitmap.compress(ImageUtils.COMPRESS_FORMAT, 75, stream)
+
+						if(scaleSize>0){
+							result.bitmap.scaleKeepAspectRatio(scaleSize)
+						}else{
+							result.bitmap
+						}.compress(ImageUtils.COMPRESS_FORMAT, 100, stream)
 
 						//Cleanup
 						stream.close()
@@ -152,18 +155,20 @@ class CropActivity : AppCompatActivity() {
 		const val INTENT_EXTRA_LOG = "intent_extra_log"
 		const val RESPONSE_EXTRA_BITMAP = "RESPONSE_EXTRA_BITMAP"
 		const val INTENT_EXTRA_CIRCULAR = "INTENT_EXTRA_CIRCULAR"
-		const val INTENT_EXTRA_WIDTH = "INTENT_EXTRA_WIDTH"
-		const val INTENT_EXTRA_HEIGHT = "INTENT_EXTRA_HEIGHT"
-		const val INTENT_EXTRA_FIXED = "INTENT_EXTRA_FIXED"
+		const val INTENT_EXTRA_ASPECT_RATIO_WIDTH = "INTENT_EXTRA_ASPECT_RATIO_WIDTH"
+		const val INTENT_EXTRA_ASPECT_RATIO_HEIGHT = "INTENT_EXTRA_ASPECT_RATIO_HEIGHT"
+		const val INTENT_EXTRA_ASPECT_RATIO_FIXED = "INTENT_EXTRA_ASPECT_RATIO_FIXED"
+		const val INTENT_EXTRA_SCALE_SIZE = "INTENT_EXTRA_SCALE_SIZE"
 
-		fun navigateForResult(activity: AppCompatActivity, uri: String, circular: Boolean, fixed: Boolean, width: Int, height: Int, requestCode: Int) {
+		fun navigateForResult(activity: Activity, uri: Uri?, circular: Boolean, fixed: Boolean, width: Int, height: Int, scaleSize: Int?, requestCode: Int) {
 			val intent = Intent(activity, CropActivity::class.java)
 
-			intent.putExtra(INTENT_EXTRA_URI, uri)
+			uri?.let { intent.putExtra(INTENT_EXTRA_URI, uri) }
 			intent.putExtra(INTENT_EXTRA_CIRCULAR, circular)
-			intent.putExtra(INTENT_EXTRA_WIDTH, width)
-			intent.putExtra(INTENT_EXTRA_HEIGHT, height)
-			intent.putExtra(INTENT_EXTRA_FIXED, fixed)
+			intent.putExtra(INTENT_EXTRA_ASPECT_RATIO_WIDTH, width)
+			intent.putExtra(INTENT_EXTRA_ASPECT_RATIO_HEIGHT, height)
+			intent.putExtra(INTENT_EXTRA_ASPECT_RATIO_FIXED, fixed)
+			scaleSize?.let { intent.putExtra(INTENT_EXTRA_SCALE_SIZE, scaleSize) }
 
 			activity.startActivityForResult(intent, requestCode)
 		}

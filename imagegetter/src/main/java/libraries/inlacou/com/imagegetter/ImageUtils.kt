@@ -8,9 +8,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat.*
 import android.graphics.BitmapFactory
-import android.graphics.Canvas
 import android.graphics.Matrix
-import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.media.ExifInterface
@@ -195,47 +193,6 @@ object ImageUtils {
 		}
 	}
 
-	fun scaleBitmapKeepAspectRatio(bitmap: Bitmap, scaleSize: Int): Bitmap {
-		val originalWidth = bitmap.width
-		val originalHeight = bitmap.height
-		var newWidth = -1
-		var newHeight = -1
-		when {
-			originalHeight > originalWidth -> {
-				newHeight = scaleSize
-				val multFactor = originalWidth.toFloat() / originalHeight.toFloat()
-				newWidth = (newHeight * multFactor).toInt()
-			}
-			originalWidth > originalHeight -> {
-				newWidth = scaleSize
-				val multFactor = originalHeight.toFloat() / originalWidth.toFloat()
-				newHeight = (newWidth * multFactor).toInt()
-			}
-			originalHeight == originalWidth -> {
-				newHeight = scaleSize
-				newWidth = scaleSize
-			}
-		}
-		return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, false)
-	}
-
-	fun scaleBitmapKeepAspectRatio(originalImage: Bitmap, width: Int, height: Int): Bitmap {
-		val background = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-		val originalWidth = originalImage.width.toFloat()
-		val originalHeight = originalImage.height.toFloat()
-		val canvas = Canvas(background)
-		val scale = width / originalWidth
-		val xTranslation = 0.0f
-		val yTranslation = (height - originalHeight * scale) / 2.0f
-		val transformation = Matrix()
-		transformation.postTranslate(xTranslation, yTranslation)
-		transformation.preScale(scale, scale)
-		val paint = Paint()
-		paint.isFilterBitmap = true
-		canvas.drawBitmap(originalImage, transformation, paint)
-		return background
-	}
-
 	fun getHeightScaleToWidth(originalWidth: Int, originalHeight: Int, width: Int): Int {
 		var newWidth = -1
 		var newHeight = -1
@@ -263,18 +220,11 @@ object ImageUtils {
 	}
 
 	fun setImage(context: Context, bitmap: Bitmap, imageView: ImageView) {
-		val d = BitmapDrawable(context.resources, bitmap)
-
-		imageView.background = d
+		imageView.background = BitmapDrawable(context.resources, bitmap)
 	}
 
 	private fun setImageScale(context: Context, bitmap: Bitmap, imageView: ImageView, view: View) {
-		var bitmap = bitmap
-		bitmap = ImageUtils.scaleBitmap(bitmap, view.width, view.height)
-
-		val d = BitmapDrawable(context.resources, bitmap)
-
-		imageView.background = d
+		imageView.background = BitmapDrawable(context.resources, ImageUtils.scaleBitmap(bitmap, view.width, view.height))
 	}
 
 	/*public static Bitmap cropBitmap(Bitmap bitmap) {
@@ -379,10 +329,10 @@ object ImageUtils {
 		return byteArrayOutputStream.toByteArray()
 	}
 
-	fun setImageFromMemory(activity: Activity, filename: String, maxSize: Int, imageView: ImageView, adjustViewBounds: Boolean, setScaleType: Boolean) {
+	fun setImageFromMemory(activity: Activity, filename: String, maxImageSize: Int, imageView: ImageView, adjustViewBounds: Boolean, setScaleType: Boolean) {
 		var selectedImage: Bitmap? = null
 		try {
-			selectedImage = ImageGetter.getBitmapFromPath(activity, filename, maxSize)
+			selectedImage = ImageGetter.getBitmapFromPath(activity, filename, maxImageSize)
 		} catch (e: IOException) {
 			e.printStackTrace()
 		}

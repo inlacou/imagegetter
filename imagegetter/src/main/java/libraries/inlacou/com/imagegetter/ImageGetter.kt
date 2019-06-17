@@ -8,7 +8,6 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import timber.log.Timber
 
 import java.io.File
@@ -29,6 +28,7 @@ class ImageGetter(private val activity: Activity,
 				  private val format: Bitmap.CompressFormat = Bitmap.CompressFormat.PNG,
 				  private val width: Int = 1,
 				  private val height: Int = 1,
+				  private val maxImageSize: Int? = null,
 				  private val request_code_select_picture: Int,
 				  private val request_code_crop: Int,
 				  private val callbacks: Callbacks) {
@@ -139,14 +139,9 @@ class ImageGetter(private val activity: Activity,
 
 	private fun launchCropActivity(selectedImageUri: Uri?) {
 		log("launchCropActivity")
-		val intent = Intent(activity, CropActivity::class.java)
-		selectedImageUri?.let { intent.putExtra(CropActivity.INTENT_EXTRA_URI, selectedImageUri) }
-		intent.putExtra(CropActivity.INTENT_EXTRA_LOG, log)
-		intent.putExtra(CropActivity.INTENT_EXTRA_CIRCULAR, circular)
-		intent.putExtra(CropActivity.INTENT_EXTRA_WIDTH, width)
-		intent.putExtra(CropActivity.INTENT_EXTRA_HEIGHT, height)
-		intent.putExtra(CropActivity.INTENT_EXTRA_FIXED, fixed)
-		activity.startActivityForResult(intent, request_code_crop)
+
+		CropActivity.navigateForResult(activity = activity,
+				width = width, height = height, requestCode = request_code_crop, circular = circular, fixed = fixed, scaleSize = maxImageSize, uri = selectedImageUri)
 	}
 
 	fun onSaveInstanceState(outState: Bundle) {
@@ -195,14 +190,13 @@ class ImageGetter(private val activity: Activity,
 			return try {
 				val inputStream = FileInputStream(filename)
 				var bitmap = BitmapFactory.decodeStream(inputStream)
-				bitmap = ImageUtils.scaleBitmapKeepAspectRatio(bitmap, size)
+				bitmap = bitmap.scaleKeepAspectRatio(size)
 				inputStream.close()
 				bitmap
 			} catch (fnfe: FileNotFoundException) {
-				ImageUtils.scaleBitmapKeepAspectRatio(MediaStore.Images.Media.getBitmap(
-						context.contentResolver, Uri.parse(filename)), size)
+				MediaStore.Images.Media.getBitmap(context.contentResolver, Uri.parse(filename))
+						.scaleKeepAspectRatio(size)
 			}
-
 		}
 
 		@Throws(IOException::class)
