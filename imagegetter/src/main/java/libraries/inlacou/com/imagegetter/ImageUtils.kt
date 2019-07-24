@@ -375,7 +375,7 @@ object ImageUtils {
 	/**
 	 * This method will resize @param bitmap to file size @param quality and image dimensions @param imageSize and write it on @param absolutePath path as a JPEG file
 	 */
-	fun fullResizeImage(absolutePath: String, imageSize: Int, bitmap: Bitmap, quality: Int) {
+	fun fullResizeImage(absolutePath: String, imageSize: Int, bitmap: Bitmap, quality: Int, log: Boolean = false) {
 		//Get byte stream to work with
 		val stream = ByteArrayOutputStream()
 		//Get file stream to write file
@@ -388,7 +388,7 @@ object ImageUtils {
 		}else{
 			bitmap
 		}.compress(JPEG, quality, stream)
-		Timber.d("current file size (STEP 1): ${stream.toByteArray().size/1000} (quality $quality)")
+		if(log) Timber.d("current file size (STEP 1): ${stream.toByteArray().size/1000} (quality $quality)")
 		//Write to disk
 		stream.writeTo(auxFileStream)
 		

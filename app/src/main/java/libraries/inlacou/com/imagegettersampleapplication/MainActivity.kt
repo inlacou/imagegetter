@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 	
 	private var imageGetter: ImageGetter? = null
 	private var compressFormat: Bitmap.CompressFormat = Bitmap.CompressFormat.PNG
-	private var maxImageSize: Int = 1024
+	private var maxImageSize: Int = 512
 	private var maxFileSize: Int = 400
 	private var crop: Boolean = true
 	private var circularCropUi: Boolean = true

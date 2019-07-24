@@ -121,7 +121,7 @@ class CropActivity : AppCompatActivity() {
 					try {
 						//Write file
 						//File name for temporal resizable JPEG file
-						val auxFilename = "${ImageUtils.getRootUri(this)}temp.jpeg"
+						val auxFilename = "${ImageUtils.getRootUri(this)}temp_${System.currentTimeMillis()}.jpeg"
 						//File name for final result file
 						val filename = "${ImageUtils.getRootUri(this)}${ImageUtils.uniqueImageFilename}"
 						//Get byte stream to work with
@@ -134,8 +134,8 @@ class CropActivity : AppCompatActivity() {
 							//Clean the stream to use it again
 							stream.reset()
 							
-							//Here we resize image dimensions and file size to desired quality (in JPEG
-							ImageUtils.fullResizeImage(auxFilename, fileSize, result.bitmap, quality)
+							//Here we resize image dimensions and file size to desired quality (in JPEG)
+							ImageUtils.fullResizeImage(absolutePath = auxFilename, imageSize = imageSize, bitmap = result.bitmap, quality = quality, log = log)
 							
 							//Get resized JPEG image to bitmap
 							val bitmap = BitmapFactory.decodeFile(auxFilename)
@@ -143,14 +143,16 @@ class CropActivity : AppCompatActivity() {
 							bitmap.compress(ImageUtils.COMPRESS_FORMAT, 100, stream)
 							//Recycle the bitmap as soon as possible
 							bitmap.recycle()
-							quality -= 5
-							Timber.d("current file size (STEP 2): ${stream.toByteArray().size / 1000}vs$fileSize (quality ${quality+5})")
-						}while (fileSize>0 && stream.toByteArray().size/1000>fileSize && quality>5)
+							val previousQuality = quality
+							quality -= if(quality<=10) 1 else 5
+							log("current file size (STEP 2): ${stream.toByteArray().size / 1000}vs$fileSize (quality $previousQuality)")
+						}while (fileSize>0 && stream.toByteArray().size/1000>fileSize && previousQuality>0)
 						//Write to disk
 						stream.writeTo(FileOutputStream(filename))
 						
 						//Cleanup
 						result.bitmap.recycle()
+						ImageUtils.deleteFile(auxFilename)
 
 						uri?.let { ImageUtils.deleteFile("${ImageUtils.getRootUri(this)}${it.lastPathSegment}") }
 
