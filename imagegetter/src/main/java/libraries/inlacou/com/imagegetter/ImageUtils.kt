@@ -22,11 +22,8 @@ import android.util.Base64
 import android.view.View
 import android.widget.ImageView
 import timber.log.Timber
+import java.io.*
 
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileNotFoundException
-import java.io.IOException
 import java.util.ArrayList
 
 object ImageUtils {
@@ -344,5 +341,59 @@ object ImageUtils {
 		if (setScaleType) imageView.scaleType = ImageView.ScaleType.CENTER_CROP
 		val drawable = BitmapDrawable(activity.resources, selectedImage)
 		imageView.setImageDrawable(drawable)
+	}
+	
+	/**
+	 * This method will resize @param bitmap to file size @param imageFileSize and image dimensions @param imageSize and write it on @param absolutePath path as a JPEG file
+	 */
+	fun fullResizeImage(absolutePath: String, imageFileSize: Int, imageSize: Int, bitmap: Bitmap) {
+		//Get byte stream to work with
+		val stream = ByteArrayOutputStream()
+		//Get file stream to write file
+		val auxFileStream = FileOutputStream(absolutePath)
+		//Scale and resize step
+		var quality = 100
+		do {
+			stream.reset()
+			//Maybe do not repeat this scaleKeepAspectRatio
+			if(imageSize>0){
+				bitmap.scaleKeepAspectRatio(imageSize)
+			}else{
+				bitmap
+			}.compress(JPEG, quality, stream)
+			quality -= 5
+			Timber.d("current file size (STEP 1): ${stream.toByteArray().size/1024}vs$imageFileSize (quality ${quality+5})")
+		}while(imageFileSize>0 && stream.toByteArray().size/1024>imageFileSize && quality>0)
+		//Write to disk
+		stream.writeTo(auxFileStream)
+		
+		//Cleanup
+		stream.close()
+		auxFileStream.close()
+	}
+	
+	/**
+	 * This method will resize @param bitmap to file size @param quality and image dimensions @param imageSize and write it on @param absolutePath path as a JPEG file
+	 */
+	fun fullResizeImage(absolutePath: String, imageSize: Int, bitmap: Bitmap, quality: Int) {
+		//Get byte stream to work with
+		val stream = ByteArrayOutputStream()
+		//Get file stream to write file
+		val auxFileStream = FileOutputStream(absolutePath)
+		//Scale and resize step
+		stream.reset()
+		//Maybe do not repeat this scaleKeepAspectRatio
+		if(imageSize>0){
+			bitmap.scaleKeepAspectRatio(imageSize)
+		}else{
+			bitmap
+		}.compress(JPEG, quality, stream)
+		Timber.d("current file size (STEP 1): ${stream.toByteArray().size/1000} (quality $quality)")
+		//Write to disk
+		stream.writeTo(auxFileStream)
+		
+		//Cleanup
+		stream.close()
+		auxFileStream.close()
 	}
 }

@@ -5,11 +5,14 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.NavigationView
+import android.support.design.widget.TextInputEditText
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
@@ -20,7 +23,12 @@ import timber.log.Timber
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
 	private var imageView: ImageView? = null
+	private var tietMaxImageSize: TextInputEditText? = null
+	private var tietMaxFileSize: TextInputEditText? = null
+	
 	private var imageGetter: ImageGetter? = null
+	private var maxImageSize: Int = 1024
+	private var maxFileSize: Int = 400
 
 	private val imageGetterCallbacks: ImageGetter.Callbacks
 		get() = object : ImageGetter.Callbacks {
@@ -44,7 +52,29 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 		setContentView(R.layout.activity_main)
 		val toolbar = findViewById<Toolbar>(R.id.toolbar)
 		setSupportActionBar(toolbar)
+		
+		tietMaxFileSize = findViewById(R.id.tiet_max_file_size)
+		tietMaxImageSize = findViewById(R.id.tiet_max_image_size)
 
+		tietMaxFileSize?.addTextChangedListener(object : TextWatcher {
+			override fun afterTextChanged(s: Editable?) {}
+			override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+			override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+				maxFileSize = s?.toString()?.toIntOrNull() ?: 400
+			}
+		})
+		
+		tietMaxImageSize?.addTextChangedListener(object : TextWatcher {
+			override fun afterTextChanged(s: Editable?) {}
+			override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+			override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+				maxImageSize = s?.toString()?.toIntOrNull() ?: 1024
+			}
+		})
+		
+		tietMaxFileSize?.setText(maxFileSize.toString())
+		tietMaxImageSize?.setText(maxImageSize.toString())
+		
 		val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
 		val toggle = ActionBarDrawerToggle(
 				this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -65,10 +95,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 						true,
 						true,
 						true,
-						Bitmap.CompressFormat.JPEG,
+						Bitmap.CompressFormat.PNG,
 						-1,
 						-1,
-						512,
+						maxImageSize,
+						maxFileSize,
 						REQUEST_CODE_SELECT_PICTURE,
 						REQUEST_CODE_CROP,
 						imageGetterCallbacks)

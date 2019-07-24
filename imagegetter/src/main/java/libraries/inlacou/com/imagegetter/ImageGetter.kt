@@ -29,6 +29,7 @@ class ImageGetter(private val activity: Activity,
 				  private val width: Int = 1,
 				  private val height: Int = 1,
 				  private val maxImageSize: Int? = null,
+				  private val maxFileSizeKb: Int? = null,
 				  private val request_code_select_picture: Int,
 				  private val request_code_crop: Int,
 				  private val callbacks: Callbacks) {
@@ -141,7 +142,7 @@ class ImageGetter(private val activity: Activity,
 		log("launchCropActivity")
 
 		CropActivity.navigateForResult(activity = activity,
-				width = width, height = height, requestCode = request_code_crop, circular = circular, fixed = fixed, scaleSize = maxImageSize, uri = selectedImageUri)
+				width = width, height = height, requestCode = request_code_crop, circular = circular, fixed = fixed, imageSize = maxImageSize, fileSize = maxFileSizeKb, uri = selectedImageUri, log = log)
 	}
 
 	fun onSaveInstanceState(outState: Bundle) {
