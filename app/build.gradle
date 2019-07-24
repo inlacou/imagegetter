@@ -29,6 +29,7 @@ dependencies {
 	implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 	implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
 }
+
 repositories {
 	mavenCentral()
 }
