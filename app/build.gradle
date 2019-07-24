@@ -2,15 +2,15 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-	compileSdkVersion 28
+	compileSdkVersion 29
 	buildToolsVersion '28.0.3'
 	defaultConfig {
 		applicationId "libraries.inlacou.com.imagegettersampleapplication"
 		minSdkVersion 16
-		targetSdkVersion 28
+		targetSdkVersion 29
 		versionCode 1
 		versionName "1.0"
-		testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+		testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 	}
 	buildTypes {
 		release {
@@ -22,12 +22,12 @@ android {
 
 dependencies {
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
-	implementation 'com.android.support:appcompat-v7:28.0.0'
-	implementation 'com.android.support:exifinterface:28.0.0'
-	implementation 'com.android.support:design:28.0.0'
+	implementation 'androidx.appcompat:appcompat:1.0.2'
+	implementation 'androidx.exifinterface:exifinterface:1.0.0'
+	implementation 'com.google.android.material:material:1.0.0'
 	implementation project(':imagegetter')
 	implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-	implementation 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
+	implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
 }
 repositories {
 	mavenCentral()

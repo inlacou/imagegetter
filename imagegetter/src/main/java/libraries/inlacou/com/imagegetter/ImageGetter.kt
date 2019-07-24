@@ -45,6 +45,13 @@ class ImageGetter(private val activity: Activity,
 		if(log) Timber.d("$tag | $s")
 	}
 
+	init {
+		Timber.d("init with params | log: $log | crop: $crop " +
+				"| circular: $circular | fixed: $fixed | useCamera: $useCamera | useGallery: $useGallery | format: $format " +
+				"| width: $width | height: $height | maxImageSize: $maxImageSize | maxFileSizeKb: $maxFileSizeKb " +
+				"| request_code_select_picture: $request_code_select_picture | request_code_crop: $request_code_crop")
+	}
+	
 	@JvmOverloads
 	fun start(tag: String, destroyPrevious: Boolean = false) { //It's false until below TODO is addressed
 		log("start with tag: $tag")
@@ -122,10 +129,10 @@ class ImageGetter(private val activity: Activity,
 
 				selectedImage = ImageUtils.scaleBitmapKeepAspectRatio(bitmap, 250, 250);*/
 
-				if (!crop) {
-					callbacks.setImage(selectedImageUri.toString(), tag)
-				} else {
+				if (crop) {
 					launchCropActivity(selectedImageUri)
+				} else {
+					callbacks.setImage(selectedImageUri.toString(), tag)
 				}
 			} else if (requestCode == request_code_crop) {
 				val filename = data!!.getStringExtra(CropActivity.RESPONSE_EXTRA_BITMAP)

@@ -16,8 +16,8 @@ import android.net.Uri
 import android.os.Environment
 import android.os.Parcelable
 import android.provider.MediaStore
-import android.support.v4.content.ContextCompat
-import android.support.v4.content.FileProvider
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import android.util.Base64
 import android.view.View
 import android.widget.ImageView
