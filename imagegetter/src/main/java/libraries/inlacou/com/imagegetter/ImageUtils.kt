@@ -393,6 +393,7 @@ object ImageUtils {
 		stream.writeTo(auxFileStream)
 		
 		//Cleanup
+		stream.reset()
 		stream.close()
 		auxFileStream.close()
 	}

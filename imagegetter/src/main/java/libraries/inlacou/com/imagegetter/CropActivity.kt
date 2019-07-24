@@ -153,6 +153,8 @@ class CropActivity : AppCompatActivity() {
 						//Cleanup
 						result.bitmap.recycle()
 						ImageUtils.deleteFile(auxFilename)
+						stream.reset()
+						stream.close()
 
 						uri?.let { ImageUtils.deleteFile("${ImageUtils.getRootUri(this)}${it.lastPathSegment}") }
 
