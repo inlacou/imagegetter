@@ -74,3 +74,17 @@ In your activity:
 		imageGetter = ImageGetter.onRestoreInstanceState(savedInstanceState, getImageGetterCallback());
 	}
 ```
+
+In your AndroidManifest.xml inside application tag:
+
+```XML
+<provider
+	android:name="libraries.inlacou.com.imagegetter.GenericFileProvider"
+	android:authorities="${applicationId}.provider"
+	android:exported="false"
+	android:grantUriPermissions="true">
+	<meta-data
+		android:name="android.support.FILE_PROVIDER_PATHS"
+		android:resource="@xml/provider_paths"/>
+</provider>
+```
